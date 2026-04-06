@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.vlsu.ispi.beans.User;
 
 import javax.validation.Valid;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,18 +18,15 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
 
-    private final JPAService jpaService;
+    private final UserService userService;
 
-    public UserController(JPAService jpaService) {
-        this.jpaService = jpaService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
     public String listUsers(Model model) {
-        List<User> users = jpaService.runInTransaction(entityManager -> {
-            return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
-        });
-
+        List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "users";
     }
@@ -36,13 +34,9 @@ public class UserController {
     @GetMapping({"/add", "/edit"})
     public String showUserForm(@RequestParam(value = "id", required = false) Integer id, Model model) {
         if (id != null && id > 0) {
-            User user = jpaService.runInTransaction(entityManager -> {
-                return entityManager.find(User.class, id);
-            });
+            User user = userService.getUserById(id)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-            if (user == null) {
-                return "redirect:/users";
-            }
             model.addAttribute("user", user);
         } else {
             model.addAttribute("user", new User());
@@ -53,62 +47,68 @@ public class UserController {
 
     @PostMapping("/edit")
     public String editUser(@Valid @ModelAttribute("user") User user,
-                                 BindingResult result,
-                                 Model model) {
+                           BindingResult result,
+                           Model model) {
         if (result.hasErrors()) {
             return "settings";
         }
 
-        jpaService.runInTransaction(entityManager -> {
-            if (user.getId() == 0) {
-                entityManager.persist(user);
-            } else {
-                entityManager.merge(user);
-            }
-            return null;
-        });
+        int userId = user.getId();
+        if (userId == 0) {
+            // Создаём нового пользователя
+            userService.createUser(
+                    user.getName(),
+                    user.getPassword(),
+                    user.getEmail(),
+                    user.getPhoneNumber(),
+                    user.getTotalPoints()
+            );
+        } else {
+            // Обновляем существующего пользователя
+            userService.updateUser(
+                    userId,
+                    user.getName(),
+                    user.getPassword(),
+                    user.getEmail(),
+                    user.getPhoneNumber(),
+                    user.getTotalPoints()
+            );
+        }
 
         return "redirect:/users";
     }
 
     @PostMapping("/add")
     public String addUser(@Valid @ModelAttribute("user") User user,
-                              BindingResult result,
-                              Model model) {
+                          BindingResult result,
+                          Model model) {
         if (result.hasErrors()) {
             return "settings";
         }
 
-        jpaService.runInTransaction(entityManager -> {
-            if (user.getId() == 0) {
-                entityManager.persist(user);
-            } else {
-                entityManager.merge(user);
-            }
-            return null;
-        });
+        userService.createUser(
+                user.getName(),
+                user.getPassword(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getTotalPoints()
+        );
 
         return "redirect:/users";
     }
 
     @GetMapping("/delete")
     public String deleteUser(@RequestParam("id") int id) {
-        jpaService.runInTransaction(entityManager -> {
-            User user = entityManager.find(User.class, id);
-            if (user != null) {
-                entityManager.remove(user);
-            }
-            return null;
-        });
+        userService.deleteUser(id);
         return "redirect:/users";
     }
 
     @GetMapping("/table")
     public String showTable(@RequestParam("id") int id, Model model) {
-        // Здесь можно получить пользователя по id и добавить в модель, если нужно
-        User user = jpaService.runInTransaction(em -> em.find(User.class, id));
+        User user = userService.getUserById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         model.addAttribute("user", user);
-        return "table"; // имя вашей страницы для отображения таблицы
+        return "table";
     }
 
     @GetMapping("/user_table")
