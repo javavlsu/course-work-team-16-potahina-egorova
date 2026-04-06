@@ -38,7 +38,7 @@
     <div class="tasks-table">
       <a th:href="@{/tasks/add}">Создать новый список задач</a>
       <h2>Списки задач</h2>
-      <table border="1" name="ttasks">
+      <table border="1" name="tasks">
         <thead>
         <tr>
           <th>ID</th>
@@ -56,17 +56,17 @@
         <tbody>
         <tr th:each="t : ${tasks}">
           <td th:text="${t.id}"></td>
-          <td th:text="${t.user}"></td>
+          <td th:text="${t.user != null ? t.user.name : 'Не указан'}"></td>
           <td th:text="${t.title}"></td>
-          <td th:text="${t.taskList}"></td>
+          <td th:text="${t.taskList != null ? t.taskList.title : 'Не указан'}"></td>
           <td th:text="${t.category}"></td>
           <td th:text="${t.status}"></td>
           <td th:text="${t.details}"></td>
-          <td th:text="${t.deadline}"></td>
+          <td th:text="${#temporals.format(t.deadlineAt, 'dd.MM.yyyy HH:mm')}"></td>
           <td th:text="${t.points}"></td>
           <td>
-            <a th:href="@{'/tasks/edit?id='+${tl.id}}">Редактировать</a>
-            <a th:href="@{'/tasks/delete?id='+${tl.id}}"
+            <a th:href="@{'/tasks/edit?id=' + ${t.id}}">Редактировать</a>
+            <a th:href="@{'/tasks/delete?id=' + ${t.id}}"
                onclick="return confirm('Удалить задачу?');">Удалить</a>
           </td>
         </tr>
