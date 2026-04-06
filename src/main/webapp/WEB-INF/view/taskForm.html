@@ -59,9 +59,10 @@
         <label>Категория:</label>
         <select th:field="*{category}">
           <option value="">-- Выберите категорию --</option>
-          <option th:each="cat : ${T(ru.vlsu.ispi.beans.Task).Category.values()}"
-                  th:value="${cat.name()}"
-                  th:text="${cat.name()}">
+          <option th:each="cat : ${categories}"
+                  th:value="${cat}"
+                  th:text="${cat}"
+                  th:selected="${task.category == cat}">
           </option>
         </select>
         <div th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error"></div>
@@ -69,10 +70,12 @@
 
         <label>Статус:</label>
         <select th:field="*{status}">
-          <option value="">-- Выберите категорию --</option>
-          <option th:each="stat : ${T(ru.vlsu.ispi.beans.Task).Status.values()}"
-                  th:value="${stat.name()}"
-                  th:text="${stat.name()}"></option>
+          <option value="">-- Выберите статус --</option>
+          <option th:each="stat : ${statuses}"
+                  th:value="${stat}"
+                  th:text="${stat}"
+                  th:selected="${task.status == stat}">
+          </option>
         </select>
         <div th:if="${#fields.hasErrors('status')}" th:errors="*{status}" class="error"></div>
         <br/>

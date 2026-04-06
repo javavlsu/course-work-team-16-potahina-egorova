@@ -9,6 +9,7 @@ import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -32,6 +33,7 @@ public class TaskController {
         return "tasks";
     }
 
+
     @GetMapping({"/add", "/edit"})
     public String showTaskForm(@RequestParam(value = "id", required = false) Integer id, Model model) {
         Task task;
@@ -50,6 +52,10 @@ public class TaskController {
         // Получаем все списки задач для выпадающего списка
         List<TaskList> taskLists = taskListService.getAllTaskLists();
         model.addAttribute("taskLists", taskLists);
+
+        // Добавляем значения enum в модель
+        model.addAttribute("categories", Arrays.asList(Task.Category.values()));
+        model.addAttribute("statuses", Arrays.asList(Task.Status.values()));
 
         return "taskForm";
     }

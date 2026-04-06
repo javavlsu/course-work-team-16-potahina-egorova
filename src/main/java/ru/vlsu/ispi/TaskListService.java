@@ -1,6 +1,7 @@
 package ru.vlsu.ispi;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.beans.Task;
 import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;
@@ -8,6 +9,7 @@ import ru.vlsu.ispi.beans.User;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class TaskListService {
     private final TaskListRepository taskListRepository;
 
