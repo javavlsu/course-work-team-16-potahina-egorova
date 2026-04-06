@@ -40,11 +40,11 @@ public class Task {
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(name="category")
+	@Column(name = "category", nullable = false)
 	private Category category;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name="status")
+	@Column(name="status", nullable = false)
 	private Status status;
 
 	@Column
@@ -55,17 +55,23 @@ public class Task {
 	@Column
 	private int points;
 
+
 	public Task(String title, TaskList taskList, User user,
 				Category category, Status status, String details,
 				LocalDateTime deadlineAt, int points) {
 		this.title = title;
 		this.taskList = taskList;
 		this.user = user;
-		this.category = category;
-		this.status = status;
+		this.category = category != null ? category : Category.Other;
+		this.status = status != null ? status : Status.NotStarted;
 		this.details = details;
 		this.deadlineAt = deadlineAt;
 		this.points = points;
+	}
+
+	public Task(Category category, Status status) {
+		this.category = Category.Other;
+		this.status = Status.NotStarted;
 	}
 
 	public Task() {}
@@ -116,7 +122,7 @@ public class Task {
 	}
 
 	public void setCategory(Category category) {
-		this.category = category;
+		this.category = category != null ? category : Category.Other;
 	}
 
 	public Category getCategory() {
@@ -124,7 +130,7 @@ public class Task {
 	}
 
 	public void setStatus(Status status) {
-		this.status = status;
+		this.status = status != null ? status : Status.NotStarted;
 	}
 
 	public Status getStatus() {

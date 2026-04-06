@@ -56,11 +56,11 @@
         <tbody>
         <tr th:each="t : ${tasks}">
           <td th:text="${t.id}"></td>
-          <td th:text="${t.user != null ? t.user.name : 'Не указан'}"></td>
+          <td th:text="${t.user != null ? t.user : 'Не указан'}"></td>
           <td th:text="${t.title}"></td>
           <td th:text="${t.taskList != null ? t.taskList.title : 'Не указан'}"></td>
-          <td th:text="${t.category}"></td>
-          <td th:text="${t.status}"></td>
+          <td th:text="${t.category != null ? t.category : 'Не указана'}"></td>
+          <td th:text="${t.status != null ? t.status : 'Не указан'}"></td>
           <td th:text="${t.details}"></td>
           <td th:text="${#temporals.format(t.deadlineAt, 'dd.MM.yyyy HH:mm')}"></td>
           <td th:text="${t.points}"></td>

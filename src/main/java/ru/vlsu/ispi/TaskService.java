@@ -47,6 +47,14 @@ public class TaskService {
         task.setDetails(details);
         task.setDeadlineAt(deadlineAt);
         task.setPoints(points);
+
+        if (task.getCategory() == null) {
+            task.setCategory(Category.Other);
+        }
+        if (task.getStatus() == null) {
+            task.setStatus(Status.NotStarted);
+        }
+
         return taskRepository.save(task);
     }
 

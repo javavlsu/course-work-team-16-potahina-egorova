@@ -7,7 +7,11 @@
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/time_management"/>
             <property name="javax.persistence.jdbc.user" value="root"/>
             <property name="javax.persistence.jdbc.password" value="1825xy"/>
-            <!-- Замените или добавьте это свойство -->
+<!--create — создаёт схему базы данных с нуля при каждом запуске приложения. Все существующие таблицы и данные будут удалены.-->
+<!--update — обновляет существующую схему базы данных, добавляя новые таблицы и колонки, но не удаляет устаревшие элементы.-->
+<!--validate — только проверяет соответствие схемы базы данных и модели данных, не внося изменений. Если есть несоответствия, приложение не запустится.-->
+<!--create-drop — создаёт схему при запуске и удаляет её при завершении работы приложения. Удобно для тестов.-->
+<!--none — отключает автоматическое управление схемой. Hibernate не будет создавать, обновлять или проверять схему.-->
             <property name="hibernate.ddl-auto" value="update"/>
             <!-- Если вы полностью переходите на hibernate.ddl-auto, можно убрать -->
             <!-- <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/> -->
