@@ -26,10 +26,10 @@ public class TaskList {
 	@OneToMany(mappedBy = "taskList", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Task> tasks = new ArrayList<>();
 
-	public TaskList(int id, String title, User user){
-		this.id = id;
+	public TaskList(String title, User user, List<Task> tasks){
 		this.title = title;
 		this.user = user;
+		this.tasks = tasks;
 	}
 
 	public TaskList() {}
@@ -64,5 +64,12 @@ public class TaskList {
 
 	public User getUser() {
 		return this.user;
+	}
+
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
+	}
+	public List<Task> getTasks() {
+		return this.tasks;
 	}
 }

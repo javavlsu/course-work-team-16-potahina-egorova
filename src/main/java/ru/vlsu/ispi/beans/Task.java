@@ -25,14 +25,14 @@ public class Task {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	private enum Category {
+	public enum Category {
 		ImportantUrgent,
 		UnimportantUrgent,
 		ImportantNonUrgent,
 		Other
 	}
 
-	private enum Status {
+	public enum Status {
 		NotStarted,
 		Started,
 		InProgress,
@@ -55,10 +55,9 @@ public class Task {
 	@Column
 	private int points;
 
-	public Task(int id, String title, TaskList taskList, User user,
+	public Task(String title, TaskList taskList, User user,
 				Category category, Status status, String details,
 				LocalDateTime deadlineAt, int points) {
-		this.id = id;
 		this.title = title;
 		this.taskList = taskList;
 		this.user = user;
