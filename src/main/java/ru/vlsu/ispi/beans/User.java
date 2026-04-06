@@ -2,6 +2,8 @@ package ru.vlsu.ispi.beans;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -21,6 +23,12 @@ public class User {
 	private String phoneNumber;
 	@Column
 	private int totalPoints = 0;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<TaskList> taskLists = new ArrayList<>();
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Task> tasks = new ArrayList<>();
 
 	public User(String name, String password, String email, String phone_number, int total_points) {
 		this.name = name;

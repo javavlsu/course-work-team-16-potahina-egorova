@@ -15,17 +15,17 @@ public class TaskExecutionLog {
 	private int id;
 	@OneToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn
-	private Task task_id;
+	private Task task;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="assigned_to_user_id")
 	private User user;
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-	private LocalDateTime assigned_at;
+	private LocalDateTime assignedAt;
 	@Column
-	private boolean report_attached;
+	private boolean isReportAttached;
 	@Column
-	private String completion_report;
+	private String completionReport;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="music_media_id")
 	private MusicMedia musicMedia;

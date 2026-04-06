@@ -13,13 +13,16 @@ public class Task {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private int id;
+
 	@Column
 	private String title;
-	@OneToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "task_list_id")
 	private TaskList taskList;
-	@OneToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
 	private User user;
 
 	private enum Category {

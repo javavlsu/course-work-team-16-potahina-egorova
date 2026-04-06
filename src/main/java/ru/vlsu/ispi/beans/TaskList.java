@@ -3,6 +3,8 @@ package ru.vlsu.ispi.beans;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -12,12 +14,17 @@ public class TaskList {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private int id;
+
 	@Column
 	@NotEmpty
 	private String title;
-	@ManyToOne(cascade = CascadeType.MERGE)
-	@JoinColumn
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
 	private User user;
+
+	@OneToMany(mappedBy = "taskList", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Task> tasks = new ArrayList<>();
 
 	public TaskList(int id, String title, User user){
 		this.id = id;
