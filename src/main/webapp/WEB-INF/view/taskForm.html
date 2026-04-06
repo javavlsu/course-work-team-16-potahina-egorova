@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Создать / редактировать задачу</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
+    .navbar { display: flex; background-color: #00b3a8; padding: 10px; }
+    .logo { background-color: #00b3a8; color: white; padding: 10px; font-weight: bold; }
+    .nav-item { color: #000; padding: 10px; margin-left: 10px; text-decoration: none; }
+    .nav-profile { }
+    .nav-main { background-color: #a8d8a8; }
+    .nav-achievements { background-color: #00a8b3; }
+    .nav-desktop { background-color: #ff7f50; }
+    .nav-item:hover { opacity: 0.8; }
+    .content { padding: 20px; }
+    .task-form { background-color: #ffe4e1; padding: 20px; max-width: 600px; margin: 0 auto; }
+    label { display: block; margin-bottom: 5px; }
+    input, select { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; }
+    .save-button { background-color: #ff4500; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; }
+    .footer { background-color: #a8d8a8; text-align: center; padding: 10px; position: fixed; bottom: 0; width: 100%; }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">
+      <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+    </div>
+    <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
+    <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
+    <a th:href="@{/table}" href="table.html" class="nav-item nav-desktop">Рабочий стол</a>
+    <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
+  </div>
+
+  <div class="content">
+      <form th:action="@{/tasks/add_edit}" th:object="${task}" method="post" class="task-form">
+        <h2>Создать / редактировать задачу</h2>
+
+        <input type="hidden" th:field="*{id}"/>
+
+        <label>Название:</label>
+        <input type="text" th:field="*{title}" />
+        <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error"></div>
+        <br/>
+
+        <label>Создатель:</label>
+        <select th:field="*{user}">
+          <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.name}"></option>
+        </select>
+        <br/>
+
+        <label>Список задач:</label>
+        <select th:field="*{taskList}">
+          <option th:each="tl : ${taskLists}" th:value="${tl.id}" th:text="${tl.title}"></option>
+        </select>
+        <br/>
+
+        <label>Категория:</label>
+        <select th:field="*{category}">
+          <option value="">-- Выберите категорию --</option>
+          <option th:each="cat : ${T(ru.vlsu.ispi.beans.Task).Category.values()}"
+                  th:value="${cat.name()}"
+                  th:text="${cat.name()}">
+          </option>
+        </select>
+        <div th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error"></div>
+        <br/>
+
+        <label>Статус:</label>
+        <select th:field="*{status}">
+          <option value="">-- Выберите категорию --</option>
+          <option th:each="stat : ${T(ru.vlsu.ispi.beans.Task).Status.values()}"
+                  th:value="${stat.name()}"
+                  th:text="${stat.name()}"></option>
+        </select>
+        <div th:if="${#fields.hasErrors('status')}" th:errors="*{status}" class="error"></div>
+        <br/>
+
+        <label>Подробности:</label>
+        <textarea th:field="*{details}" rows="4" cols="50"></textarea>
+        <div th:if="${#fields.hasErrors('details')}" th:errors="*{details}" class="error"></div>
+        <br/>
+
+        <label>Дедлайн:</label>
+        <input type="datetime-local" th:field="*{deadlineAt}" />
+        <div th:if="${#fields.hasErrors('deadlineAt')}" th:errors="*{deadlineAt}" class="error"></div>
+        <br/>
+
+        <label>Количество XP за выполнение:</label>
+        <input type="number" th:field="*{points}" min="0"/>
+        <div th:if="${#fields.hasErrors('points')}" th:errors="*{points}" class="error"></div>
+        <br/>
+
+        <input type="submit" value="Сохранить" />
+      </form>
+  </div>
+
+  <div class="footer">
+    © Все-приложения, 2025
+  </div>
+
+</body>
+</html>

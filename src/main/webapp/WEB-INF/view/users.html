@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Список пользователей</title>
+</head>
+<body>
+<h2>Пользователи</h2>
+<a th:href="@{/users/add}">Добавить пользователя</a>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Никнейм</th>
+        <th>Электронная почта</th>
+        <th>Количество набранных баллов</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="u : ${users}">
+        <td th:text="${u.id}"></td>
+        <td th:text="${u.name}"></td>
+        <td th:text="${u.email}"></td>
+        <td th:text="${u.totalPoints}"></td>
+        <td>
+            <a th:href="@{'/users/user_table?id='+${u.id}}">К задачам</a>
+            <a th:href="@{'/users/edit?id='+${u.id}}">Редактировать</a>
+            <a th:href="@{'/users/delete?id='+${u.id}}"
+               onclick="return confirm('Удалить пользователя?');">Удалить</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Настройки профиля</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
+        .navbar { display: flex; background-color: #00b3a8; padding: 10px; }
+        .logo { background-color: #00b3a8; color: white; padding: 10px; font-weight: bold; }
+        .nav-item { color: #000; padding: 10px; margin-left: 10px; text-decoration: none; }
+        .nav-profile { }
+        .nav-main { background-color: #a8d8a8; }
+        .nav-achievements { background-color: #00a8b3; }
+        .nav-desktop { background-color: #ff7f50; }
+        .nav-item:hover { opacity: 0.8; }
+        .content { padding: 20px; }
+        .settings-form { background-color: #ffe4e1; padding: 20px; max-width: 600px; margin: 0 auto; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; }
+        .save-button { background-color: #ff4500; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; }
+        .footer { background-color: #a8d8a8; text-align: center; padding: 10px; position: fixed; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="logo">
+            <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+        </div>
+        <a th:href="@{/dashboard}" href="../../../../../../../Users/ptaha/OneDrive/Рабочий%20стол/сайт/dashboard.html" class="nav-item nav-main">Главная</a>
+        <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
+        <a th:href="@{/table}" href="../../../../../../../Users/ptaha/OneDrive/Рабочий%20стол/сайт/table.html" class="nav-item nav-desktop">Рабочий стол</a>
+        <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
+    </div>
+
+    <div class="content">
+        <div class="settings-form">
+            <h2>Редактировать личные данные пользователя</h2>
+
+            <form th:action="@{/users/edit}" th:object="${user}" method="POST">
+
+                <input type="hidden" th:field="*{id}"/>
+
+                Никнейм:<br/>
+                <input type="text" th:field="*{name}" placeholder="Никнейм пользователя"/><br/>
+                <span class="error" th:if="${#fields.hasErrors('name')}"
+                      th:errors="*{name}"></span>
+
+                Электронная почта:<br/>
+                <input type="text" th:field="*{email}" placeholder="Электронная почта"/><br/>
+                <span class="error" th:if="${#fields.hasErrors('email')}"
+                      th:errors="*{email}"></span>
+
+                Номер телефона:<br/>
+                <input type="text" th:field="*{phoneNumber}" placeholder="Номер телефона"/><br/>
+                <span class="error" th:if="${#fields.hasErrors('phoneNumber')}"
+                      th:errors="*{phoneNumber}"></span>
+
+                Пароль:<br/>
+                <input type="password" th:field="*{password}" placeholder="Пароль"/><br/>
+                <span class="error" th:if="${#fields.hasErrors('password')}"
+                      th:errors="*{password}"></span>
+
+                <input type="hidden" th:field="*{totalPoints}" th:value="${user.totalPoints ?: 0}"/>
+
+                <br/><br/>
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        © Все-приложения, 2025
+    </div>
+
+</body>
+</html>

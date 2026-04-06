@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/time_management"/>
+        <property name="username" value="root"/>
+        <property name="password" value="1825xy"/>
+        <property name="maximumPoolSize" value="10"/>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan" value="ru.vlsu.ispi.beans" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate5.SpringSessionContext</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="userDAOImpl" class="ru.vlsu.ispi.daoimpl.UserDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="userAchievementDAOImpl" class="ru.vlsu.ispi.daoimpl.UserAchievementDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="achievementDAOImpl" class="ru.vlsu.ispi.daoimpl.AchievementDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="notificationDAOImpl" class="ru.vlsu.ispi.daoimpl.NotificationDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="taskDAOImpl" class="ru.vlsu.ispi.daoimpl.TaskDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="taskListDAOImpl" class="ru.vlsu.ispi.daoimpl.TaskListDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="taskExecutionLogDAOImpl" class="ru.vlsu.ispi.daoimpl.TaskExecutionLogDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="timerModeDAOImpl" class="ru.vlsu.ispi.daoimpl.TimerModeDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="musicMediaDAOImpl" class="ru.vlsu.ispi.daoimpl.MusicMediaDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="visualMediaDAOImpl" class="ru.vlsu.ispi.daoimpl.VisualMediaDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="tMService" class="ru.vlsu.ispi.service.TMService">
+        <property name="userDAO" ref="userDAOImpl"/>
+        <property name="userAchievementDAO" ref="userAchievementDAOImpl"/>
+        <property name="achievementDAO" ref="achievementDAOImpl"/>
+        <property name="notificationDAO" ref="notificationDAOImpl"/>
+        <property name="taskDAO" ref="taskDAOImpl"/>
+        <property name="taskListDAO" ref="taskListDAOImpl"/>
+        <property name="taskExecutionLogDAO" ref="taskExecutionLogDAOImpl"/>
+        <property name="timerModeDAO" ref="timerModeDAOImpl"/>
+        <property name="musicMediaDAO" ref="musicMediaDAOImpl"/>
+        <property name="visualMediaDAO" ref="visualMediaDAOImpl"/>
+    </bean>
+</beans>

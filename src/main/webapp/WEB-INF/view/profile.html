@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Профиль</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; text-align: center; }
+        .navbar { display: flex; background-color: #00b3a8; padding: 10px; justify-content: flex-start; }
+        .logo { background-color: #00b3a8; color: white; padding: 10px; font-weight: bold; }
+        .nav-item { color: #000; padding: 10px; margin-left: 10px; text-decoration: none; }
+        .nav-profile { background-color: #00b3a8; color: white; border: 1px solid white; } /* Выделен как текущий */
+        .nav-main { background-color: #a8d8a8; }
+        .nav-achievements { background-color: #00a8b3; }
+        .nav-desktop { background-color: #ff7f50; }
+        .nav-item:hover { opacity: 0.8; }
+        .content { padding: 50px 0; }
+        .user-icon { width: 150px; margin-bottom: 20px; }
+        .user-name { font-size: 24px; margin-bottom: 40px; }
+        .button { display: block; width: 300px; margin: 20px auto; padding: 15px; text-decoration: none; color: #000; font-size: 18px; border-radius: 4px; }
+        .edit-profile { background-color: #ff7f50; }
+        .general-settings { background-color: #00b3a8; }
+        .footer { background-color: #a8d8a8; text-align: center; padding: 10px; position: fixed; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+        </div>
+        <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
+        <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
+        <a th:href="@{/table}" href="table.html" class="nav-item nav-desktop">Рабочий стол</a>
+        <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
+    </div>
+
+    <div class="content">
+        <img th:src="@{/images/user.png}" alt="Иконка пользователя" class="user-icon" />
+        <div class="user-name" th:text="${user.name}"></div>
+        <a th:href="@{settings}" class="button add-edit">Редактировать профиль</a>
+    </div>
+
+    <div class="footer">
+        © Все-приложения, 2025
+    </div>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Рабочий стол</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
+        .navbar { display: flex; background-color: #00b3a8; padding: 10px; }
+        .logo { background-color: #00b3a8; color: white; padding: 10px; font-weight: bold; }
+        .nav-item { color: #000; padding: 10px; margin-left: 10px; text-decoration: none; }
+        .nav-profile { background-color: #00b3a8; }
+        .nav-main { background-color: #a8d8a8; }
+        .nav-achievements { background-color: #00a8b3; }
+        .nav-desktop { background-color: #ff7f50; } /* Выделен как текущий */
+        .nav-item:hover { opacity: 0.8; }
+        .content { display: flex; padding: 20px; }
+        .left-column { flex: 1; background-color: #ffe4e1; padding: 20px; margin-right: 20px; }
+        .right-column { flex: 1; background-color: #ffe4e1; padding: 20px; text-align: center; }
+        .task { background-color: #a8d8a8; padding: 10px; margin-bottom: 10px; }
+        .calendar { margin: 20px 0; background-color: #ffe4e1; }
+        .calendar table { width: 100%; border-collapse: collapse; }
+        .calendar th, .calendar td { border: 1px solid #ddd; padding: 8px; text-align: center; background-color: white; }
+        .calendar th { background-color: #f2f2f2; }
+        .button { display: block; padding: 10px; margin: 10px 0; text-decoration: none; color: white; }
+        .orange-button { background-color: #ff4500; }
+        .light-orange-button { background-color: #ff7f50; }
+        .light-blue-button { background-color: #00b3a8; }
+        .footer { background-color: #a8d8a8; text-align: center; padding: 10px; position: fixed; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+        </div>
+        <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
+        <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
+        <a th:href="@{/table}" href="table.html" class="nav-item nav-desktop">Рабочий стол</a>
+        <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
+    </div>
+
+    <div class="content">
+        <div class="left-column">
+            <h1>Задачи на сегодня</h1>
+            <div th:each="task : ${todayTasks}" class="task">
+                <span th:text="${task.title}"></span> <span th:text="${task.deadlineAt}"></span>
+                <a th:href="@{/task}" class="button orange-button">Приступить к выполнению задачи</a>
+            </div>
+        </div>
+        <div class="right-column">
+            <h1>Выберите дату для просмотра задач</h1>
+            <div class="calendar">
+                <table>
+                    <caption>March 2025</caption>
+                    <tr><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr>
+                    <tr>
+                        <td th:styleappend="${taskDays.contains(1) ? 'background-color: lightgreen;' : (1 == currentDay ? 'background-color: yellow;' : '')}">1</td>
+                        <td th:styleappend="${taskDays.contains(2) ? 'background-color: lightgreen;' : (2 == currentDay ? 'background-color: yellow;' : '')}">2</td>
+                        <td th:styleappend="${taskDays.contains(3) ? 'background-color: lightgreen;' : (3 == currentDay ? 'background-color: yellow;' : '')}">3</td>
+                        <td th:styleappend="${taskDays.contains(4) ? 'background-color: lightgreen;' : (4 == currentDay ? 'background-color: yellow;' : '')}">4</td>
+                        <td th:styleappend="${taskDays.contains(5) ? 'background-color: lightgreen;' : (5 == currentDay ? 'background-color: yellow;' : '')}">5</td>
+                        <td th:styleappend="${taskDays.contains(6) ? 'background-color: lightgreen;' : (6 == currentDay ? 'background-color: yellow;' : '')}">6</td>
+                        <td th:styleappend="${taskDays.contains(7) ? 'background-color: lightgreen;' : (7 == currentDay ? 'background-color: yellow;' : '')}">7</td>
+                    </tr>
+                    <tr>
+                        <td th:styleappend="${taskDays.contains(8) ? 'background-color: lightgreen;' : (8 == currentDay ? 'background-color: yellow;' : '')}">8</td>
+                        <td th:styleappend="${taskDays.contains(9) ? 'background-color: lightgreen;' : (9 == currentDay ? 'background-color: yellow;' : '')}">9</td>
+                        <td th:styleappend="${taskDays.contains(10) ? 'background-color: lightgreen;' : (10 == currentDay ? 'background-color: yellow;' : '')}">10</td>
+                        <td th:styleappend="${taskDays.contains(11) ? 'background-color: lightgreen;' : (11 == currentDay ? 'background-color: yellow;' : '')}">11</td>
+                        <td th:styleappend="${taskDays.contains(12) ? 'background-color: lightgreen;' : (12 == currentDay ? 'background-color: yellow;' : '')}">12</td>
+                        <td th:styleappend="${taskDays.contains(13) ? 'background-color: lightgreen;' : (13 == currentDay ? 'background-color: yellow;' : '')}">13</td>
+                        <td th:styleappend="${taskDays.contains(14) ? 'background-color: lightgreen;' : (14 == currentDay ? 'background-color: yellow;' : '')}">14</td>
+                    </tr>
+                    <tr>
+                        <td th:styleappend="${taskDays.contains(15) ? 'background-color: lightgreen;' : (15 == currentDay ? 'background-color: yellow;' : '')}">15</td>
+                        <td th:styleappend="${taskDays.contains(16) ? 'background-color: lightgreen;' : (16 == currentDay ? 'background-color: yellow;' : '')}">16</td>
+                        <td th:styleappend="${taskDays.contains(17) ? 'background-color: lightgreen;' : (17 == currentDay ? 'background-color: yellow;' : '')}">17</td>
+                        <td th:styleappend="${taskDays.contains(18) ? 'background-color: lightgreen;' : (18 == currentDay ? 'background-color: yellow;' : '')}">18</td>
+                        <td th:styleappend="${taskDays.contains(19) ? 'background-color: lightgreen;' : (19 == currentDay ? 'background-color: yellow;' : '')}">19</td>
+                        <td th:styleappend="${taskDays.contains(20) ? 'background-color: lightgreen;' : (20 == currentDay ? 'background-color: yellow;' : '')}">20</td>
+                        <td th:styleappend="${taskDays.contains(21) ? 'background-color: lightgreen;' : (21 == currentDay ? 'background-color: yellow;' : '')}">21</td>
+                    </tr>
+                    <tr>
+                        <td th:styleappend="${taskDays.contains(22) ? 'background-color: lightgreen;' : (22 == currentDay ? 'background-color: yellow;' : '')}">22</td>
+                        <td th:styleappend="${taskDays.contains(23) ? 'background-color: lightgreen;' : (23 == currentDay ? 'background-color: yellow;' : '')}">23</td>
+                        <td th:styleappend="${taskDays.contains(24) ? 'background-color: lightgreen;' : (24 == currentDay ? 'background-color: yellow;' : '')}">24</td>
+                        <td th:styleappend="${taskDays.contains(25) ? 'background-color: lightgreen;' : (25 == currentDay ? 'background-color: yellow;' : '')}">25</td>
+                        <td th:styleappend="${taskDays.contains(26) ? 'background-color: lightgreen;' : (26 == currentDay ? 'background-color: yellow;' : '')}">26</td>
+                        <td th:styleappend="${taskDays.contains(27) ? 'background-color: lightgreen;' : (27 == currentDay ? 'background-color: yellow;' : '')}">27</td>
+                        <td th:styleappend="${taskDays.contains(28) ? 'background-color: lightgreen;' : (28 == currentDay ? 'background-color: yellow;' : '')}">28</td>
+                    </tr>
+                    <tr>
+                        <td th:styleappend="${taskDays.contains(29) ? 'background-color: lightgreen;' : (29 == currentDay ? 'background-color: yellow;' : '')}">29</td>
+                        <td th:styleappend="${taskDays.contains(30) ? 'background-color: lightgreen;' : (30 == currentDay ? 'background-color: yellow;' : '')}">30</td>
+                        <td th:styleappend="${taskDays.contains(31) ? 'background-color: lightgreen;' : (31 == currentDay ? 'background-color: yellow;' : '')}">31</td>
+                        <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div>
+                <h2>Управление списками и задачами</h2>
+                <a th:href="@{'/tasks'}">Все задачи</a>
+                <a th:href="@{'/tasks/add'}">Добавить задачу</a>
+                <a th:href="@{'/task_lists'}">Все списки задач</a>
+                <a th:href="@{'/task_lists/add'}">Добавить список задач</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        © Все-приложения, 2025
+    </div>
+</body>
+</html>
