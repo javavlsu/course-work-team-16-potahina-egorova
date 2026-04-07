@@ -5,10 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.vlsu.ispi.beans.Task;
-import ru.vlsu.ispi.beans.TaskList;
-import ru.vlsu.ispi.beans.User;
-import ru.vlsu.ispi.beans.UserAchievement;
+import ru.vlsu.ispi.beans.*;
 
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -20,12 +17,15 @@ public class UserAchievementController {
     private final UserAchievementService userAchievementService;
     private final TaskService taskService;
     private final UserService userService;
+    private final AchievementService achievementService;
 
     public UserAchievementController(UserAchievementService userAchievementService,
-                                     UserService userService, TaskService taskService) {
+                                     UserService userService, TaskService taskService,
+                                     AchievementService achievementService) {
         this.userAchievementService = userAchievementService;
         this.taskService = taskService;
         this.userService = userService;
+        this.achievementService = achievementService;
     }
 
     @GetMapping
@@ -54,6 +54,9 @@ public class UserAchievementController {
         // Получаем все задачи для выпадающего списка
         List<Task> tasks = taskService.getAllTasks();
         model.addAttribute("tasks", tasks);
+
+        List<Achievement> achievements = achievementService.getAllAchievements();
+        model.addAttribute("achievements", achievements);
 
         return "userAchievementForm";
     }

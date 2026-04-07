@@ -15,8 +15,14 @@ public class Achievement {
 	private String title;
 	@Column
 	private String description;
-	@Column
-	private int reward_points;
+	@Column(name="reward_points")
+	private int rewardPoints;
+
+	public Achievement(String title, String description, int rewardPoints) {
+		this.title = title;
+		this.description = description;
+		this.rewardPoints = rewardPoints;
+	}
 
 	public Achievement() {}
 
@@ -57,11 +63,11 @@ public class Achievement {
 		return this.description; 
 	} 
 
-	public void setRewardPoints(int reward_points) {
-		this.reward_points = reward_points; 
+	public void setRewardPoints(int rewardPoints) {
+		this.rewardPoints = rewardPoints;
 	} 
 
 	public int getRewardPoints() {
-		return this.reward_points; 
+		return this.rewardPoints;
 	} 
 }
