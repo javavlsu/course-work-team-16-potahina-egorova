@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Достижения пользователей</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
+        .navbar { display: flex; background-color: #00b3a8; padding: 10px; }
+        .logo { background-color: #00b3a8; color: white; padding: 10px; font-weight: bold; }
+        .nav-item { color: #000; padding: 10px; margin-left: 10px; text-decoration: none; }
+        .nav-profile { }
+        .nav-main { background-color: #a8d8a8; }
+        .nav-achievements { background-color: #00a8b3; }
+        .nav-desktop { background-color: #ff7f50; }
+        .nav-item:hover { opacity: 0.8; }
+        .content { padding: 20px; }
+        .user-achievements-table { background-color: #ffe4e1; padding: 20px; max-width: 600px; margin: 0 auto; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; }
+        .save-button { background-color: #ff4500; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; }
+        .footer { background-color: #a8d8a8; text-align: center; padding: 10px; position: fixed; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo">
+        <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+    </div>
+    <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
+    <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
+    <a th:href="@{/table}" href="table.html" class="nav-item nav-desktop">Рабочий стол</a>
+    <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
+</div>
+
+<div class="content">
+    <div class="user-achievements-table">
+        <a th:href="@{/userAchievements/add}">Добавить достижение пользователя</a>
+        <h2>Достижения пользователей</h2>
+        <table border="1" name="userAchievements">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название достижения</th>
+                <th>Пользователь</th>
+                <th>Задача</th>
+                <th>Дата получения достижения</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ua : ${userAchievements}">
+                <td th:text="${ua.id}"></td>
+                <td th:text="${ua.achievement != null ? t.achievement.title : 'Не указано'}"></td>
+                <td th:text="${ua.user != null ? ua.user : 'Не указан'}"></td>
+                <td th:text="${ua.task != null ? ua.task.title : 'Не указана'}"></td>
+                <td th:text="${#temporals.format(ua.achievedDate, 'dd.MM.yyyy HH:mm')}"></td>
+                <td>
+                    <a th:href="@{'/userAchievements/edit?id=' + ${ua.id}}">Редактировать</a>
+                    <a th:href="@{'/userAchievements/delete?id=' + ${ua.id}}"
+                       onclick="return confirm('Удалить задачу?');">Удалить</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="footer">
+    © Все-приложения, 2025
+</div>
+</body>
+</html>
