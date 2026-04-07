@@ -3,6 +3,8 @@ package ru.vlsu.ispi.beans;
 import javax.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -24,6 +26,9 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+	private List<Notification> notifications = new ArrayList<>();
 
 	public enum Category {
 		ImportantUrgent,

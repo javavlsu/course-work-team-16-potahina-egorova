@@ -13,18 +13,22 @@ public class UserAchievement {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private int id;
-	@OneToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn
-	private User user_id;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="task_id")
+	@JoinColumn(name = "user_id")
+	private User user;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "task_id")
 	private Task task;
-	@OneToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn
-	private Achievement achievement_id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "achievement_id")
+	private Achievement achievement;
+
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-	private LocalDateTime achieved_date;
+	private LocalDateTime achievedDate;
 
 	public UserAchievement() {}
 
@@ -49,35 +53,35 @@ public class UserAchievement {
 		return this.id;
 	}
 
-	public void setUserId(User user_id) {
-		this.user_id = user_id; 
+	public void setUser(User user) {
+		this.user = user;
 	} 
 
-	public User getUserId() {
-		return this.user_id; 
+	public User getUser() {
+		return this.user;
 	}
 
-	public void setTaskId(Task task_id) {
-		this.task = task_id;
+	public void setTask(Task task) {
+		this.task = task;
 	}
 
-	public Task getTaskId() {
+	public Task getTask() {
 		return this.task;
 	}
 
-	public void setAchievementId(Achievement achievement_id) {
-		this.achievement_id = achievement_id; 
+	public void setAchievement(Achievement achievement) {
+		this.achievement = achievement;
 	} 
 
-	public Achievement getAchievementId() {
-		return this.achievement_id; 
+	public Achievement getAchievement() {
+		return this.achievement;
 	} 
 
-	public void setAchievedDate(LocalDateTime achieved_date) {
-		this.achieved_date = achieved_date; 
+	public void setAchievedDate(LocalDateTime achievedDate) {
+		this.achievedDate = achievedDate;
 	} 
 
 	public LocalDateTime getAchievedDate() {
-		return this.achieved_date; 
+		return this.achievedDate;
 	}
 }

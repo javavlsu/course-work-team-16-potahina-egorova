@@ -30,7 +30,11 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Task> tasks = new ArrayList<>();
 
-	public User(String name, String password, String email, String phone_number, int total_points) {
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private List<Notification> notifications = new ArrayList<>();
+
+	public User(String name, String password, String email,
+				String phone_number, int total_points) {
 		this.name = name;
 		this.password = password;
 		this.email = email;

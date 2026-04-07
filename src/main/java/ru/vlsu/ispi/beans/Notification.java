@@ -11,21 +11,35 @@ public class Notification {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private int id;
-	@OneToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn
-	private User user_id;
-	@OneToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn
-	private Task task_id;
-	@OneToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn
-	private UserAchievement user_achievement_id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "task_id")
+	private Task task;
+
+	@OneToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "user_achievement_id")
+	private UserAchievement userAchievement;
+
 	@Column
 	private String title;
 	@Column
 	private String text;
-	@Column
-	private boolean is_read;
+	@Column(name = "is_read")
+	private boolean isRead;
+
+	public Notification(User user, Task task, UserAchievement userAchievement,
+						String title, String text, boolean isRead) {
+		this.user = user;
+		this.task = task;
+		this.userAchievement = userAchievement;
+		this.title = title;
+		this.text = text;
+		this.isRead = isRead;
+	}
 
 	public Notification() {}
 
@@ -50,28 +64,28 @@ public class Notification {
 		return this.id;
 	}
 
-	public void setUserId(User user_id) {
-		this.user_id = user_id; 
+	public void setUser(User user) {
+		this.user = user;
 	} 
 
-	public User getUserId() {
-		return this.user_id; 
+	public User getUser() {
+		return this.user;
 	} 
 
-	public void setTaskId(Task task_id) {
-		this.task_id = task_id; 
+	public void setTask(Task task) {
+		this.task = task;
 	} 
 
-	public Task getTaskId() {
-		return this.task_id; 
+	public Task getTask() {
+		return this.task;
 	}
 
-	public void setUserAchievementId(UserAchievement user_achievement_id) {
-		this.user_achievement_id = user_achievement_id;
+	public void setUserAchievement(UserAchievement userAchievement) {
+		this.userAchievement = userAchievement;
 	}
 
-	public UserAchievement getUserAchievementId() {
-		return this.user_achievement_id;
+	public UserAchievement getUserAchievement() {
+		return this.userAchievement;
 	}
 
 	public void setTitle(String title) {
@@ -90,11 +104,11 @@ public class Notification {
 		return this.text; 
 	} 
 
-	public void setIsRead(boolean is_read) {
-		this.is_read = is_read; 
+	public void setIsRead(boolean isRead) {
+		this.isRead = isRead;
 	} 
 
 	public boolean getIsRead() {
-		return this.is_read; 
+		return this.isRead;
 	} 
 }
