@@ -1,4 +1,4 @@
-package ru.vlsu.ispi;
+package ru.vlsu.ispi.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.beans.Task.Category;
 import ru.vlsu.ispi.beans.Task.Status;
+import ru.vlsu.ispi.repositories.TaskRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

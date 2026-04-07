@@ -1,4 +1,4 @@
-package ru.vlsu.ispi.service;
+package ru.vlsu.ispi.tmservice;
 
 import ru.vlsu.ispi.dao.*;
 

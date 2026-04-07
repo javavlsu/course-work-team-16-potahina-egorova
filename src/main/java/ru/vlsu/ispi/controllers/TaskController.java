@@ -1,4 +1,4 @@
-package ru.vlsu.ispi;
+package ru.vlsu.ispi.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.vlsu.ispi.beans.Task;
 import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;
+import ru.vlsu.ispi.services.TaskListService;
+import ru.vlsu.ispi.services.TaskService;
+import ru.vlsu.ispi.services.UserService;
 
 import javax.validation.Valid;
 import java.util.Arrays;

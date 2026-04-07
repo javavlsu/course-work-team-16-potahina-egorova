@@ -1,7 +1,8 @@
-package ru.vlsu.ispi;
+package ru.vlsu.ispi.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.vlsu.ispi.repositories.TaskListRepository;
 import ru.vlsu.ispi.beans.Task;
 import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;

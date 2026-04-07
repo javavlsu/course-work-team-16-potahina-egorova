@@ -1,9 +1,8 @@
-package ru.vlsu.ispi;
+package ru.vlsu.ispi.services;
 
 import javax.persistence.*;
 
 import org.springframework.stereotype.Component;
-import ru.vlsu.ispi.beans.User;
 
 import java.util.function.Function;
 

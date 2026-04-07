@@ -1,10 +1,9 @@
-package ru.vlsu.ispi;
+package ru.vlsu.ispi.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.vlsu.ispi.beans.Task;
 import ru.vlsu.ispi.beans.User;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Integer> {
+public interface UserRepository extends JpaRepository<User, Integer> {
 }

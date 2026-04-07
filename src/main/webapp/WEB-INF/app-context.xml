@@ -95,7 +95,7 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
-    <bean id="tMService" class="ru.vlsu.ispi.service.TMService">
+    <bean id="tMService" class="ru.vlsu.ispi.tmservice.TMService">
         <property name="userDAO" ref="userDAOImpl"/>
         <property name="userAchievementDAO" ref="userAchievementDAOImpl"/>
         <property name="achievementDAO" ref="achievementDAOImpl"/>
