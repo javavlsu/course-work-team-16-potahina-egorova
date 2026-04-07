@@ -30,6 +30,14 @@ public class UserAchievement {
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
 	private LocalDateTime achievedDate;
 
+	public UserAchievement(User user, Task task, Achievement achievement,
+						   LocalDateTime achievedDate) {
+		this.user = user;
+		this.task = task;
+		this.achievement = achievement;
+		this.achievedDate = achievedDate;
+	}
+
 	public UserAchievement() {}
 
 	@Override
