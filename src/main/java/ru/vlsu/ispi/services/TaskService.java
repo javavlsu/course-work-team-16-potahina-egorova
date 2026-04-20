@@ -23,11 +23,11 @@ public class TaskService {
     }
 
     public Task createTask(String title, TaskList taskList,
-                           User user, Category category, Status status,
-                           String details, LocalDateTime deadlineAt,
+                           User user, User assignedUser, Category category, Status status,
+                           String details, LocalDateTime assignedAt, LocalDateTime deadlineAt,
                            int points) {
-        Task task = new Task(title, taskList, user, category, status,
-                details, deadlineAt, points);
+        Task task = new Task(title, taskList, user, assignedUser, category, status,
+                details, assignedAt, deadlineAt, points);
         return taskRepository.save(task);
     }
 
@@ -36,16 +36,18 @@ public class TaskService {
     }
 
     public Task updateTask(int id, String title, TaskList taskList,
-                           User user, Category category, Status status,
-                           String details, LocalDateTime deadlineAt,
+                           User user, User assignedUser, Category category, Status status,
+                           String details, LocalDateTime assignedAt, LocalDateTime deadlineAt,
                            int points) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
         task.setTitle(title);
         task.setTaskList(taskList);
         task.setUser(user);
+        task.setAssignedUser(assignedUser);
         task.setCategory(category);
         task.setStatus(status);
         task.setDetails(details);
+        task.setAssignedAt(assignedAt);
         task.setDeadlineAt(deadlineAt);
         task.setPoints(points);
 

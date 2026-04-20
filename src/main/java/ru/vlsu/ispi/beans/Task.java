@@ -27,6 +27,10 @@ public class Task {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="assigned_to_user_id")
+	private User assignedUser;
+
 	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
 	private List<Notification> notifications = new ArrayList<>();
 
@@ -54,6 +58,11 @@ public class Task {
 
 	@Column
 	private String details;
+
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+	private LocalDateTime assignedAt;
+
 	@Column
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime deadlineAt;
@@ -62,14 +71,17 @@ public class Task {
 
 
 	public Task(String title, TaskList taskList, User user,
-				Category category, Status status, String details,
+				User assignedUser, Category category, Status status,
+				String details, LocalDateTime assignedAt,
 				LocalDateTime deadlineAt, int points) {
 		this.title = title;
 		this.taskList = taskList;
 		this.user = user;
+		this.assignedUser = assignedUser;
 		this.category = category != null ? category : Category.Other;
 		this.status = status != null ? status : Status.NotStarted;
 		this.details = details;
+		this.assignedAt = assignedAt;
 		this.deadlineAt = deadlineAt;
 		this.points = points;
 	}
@@ -115,7 +127,15 @@ public class Task {
 	}
 
 	public User getUser() {
-		return this.user;
+		return user;
+	}
+
+	public User getAssignedUser() {
+		return this.assignedUser;
+	}
+
+	public void setAssignedUser(User assignedUser) {
+		this.assignedUser = assignedUser;
 	}
 
 	public void setTaskList(TaskList taskList) {
@@ -148,7 +168,15 @@ public class Task {
 
 	public String getDetails() {
 		return this.details; 
-	}  
+	}
+
+	public LocalDateTime getAssignedAt() {
+		return assignedAt;
+	}
+
+	public void setAssignedAt(LocalDateTime assignedAt) {
+		this.assignedAt = assignedAt;
+	}
 
 	public void setDeadlineAt(LocalDateTime deadlineAt) {
 		this.deadlineAt = deadlineAt;

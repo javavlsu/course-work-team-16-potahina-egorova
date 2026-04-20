@@ -43,7 +43,6 @@ public class TaskExecutionLogController {
             @RequestParam("taskId") Integer taskId,
             Model model
     ) {
-        User currentUser = userService.getTestUser();
 
         // Получаем задачу, но не передаём её напрямую в newLog
         Task task = taskService.getTaskById(taskId)
@@ -51,7 +50,6 @@ public class TaskExecutionLogController {
 
         TaskExecutionLog newLog = new TaskExecutionLog();
         newLog.setTask(task); // передаём существующую задачу
-        newLog.setUser(currentUser);
         newLog.setCompletionReport("");
         newLog.setMusicMedia(null);
         newLog.setVisualMedia(null);

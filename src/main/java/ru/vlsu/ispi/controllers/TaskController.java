@@ -82,9 +82,11 @@ public class TaskController {
                     task.getTitle(),
                     task.getTaskList(),
                     task.getUser(),
+                    task.getAssignedUser(),
                     task.getCategory(),
                     task.getStatus(),
                     task.getDetails(),
+                    task.getAssignedAt(),
                     task.getDeadlineAt(),
                     task.getPoints()
             );
@@ -95,9 +97,11 @@ public class TaskController {
                     task.getTitle(),
                     task.getTaskList(),
                     task.getUser(),
+                    task.getAssignedUser(),
                     task.getCategory(),
                     task.getStatus(),
                     task.getDetails(),
+                    task.getAssignedAt(),
                     task.getDeadlineAt(),
                     task.getPoints()
             );

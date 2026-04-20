@@ -18,12 +18,6 @@ public class TaskExecutionLog {
 	@JoinColumn
 	private Task task;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="assigned_to_user_id")
-	private User user;
-	@Column
-	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-	private LocalDateTime assignedAt;
 	@Column
 	private boolean isReportAttached;
 	@Column
@@ -43,6 +37,20 @@ public class TaskExecutionLog {
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
 	private LocalDateTime endTime;
+
+
+	public TaskExecutionLog(Task task, boolean isReportAttached, String completionReport,
+							MusicMedia musicMedia, VisualMedia visualMedia, TimerMode timerMode,
+							LocalDateTime startTime, LocalDateTime endTime) {
+		this.task = task;
+		this.isReportAttached = isReportAttached;
+		this.completionReport = completionReport;
+		this.musicMedia = musicMedia;
+		this.visualMedia = visualMedia;
+		this.timerMode = timerMode;
+		this.startTime = startTime;
+		this.endTime = endTime;
+	}
 
 	public TaskExecutionLog() {}
 
@@ -73,22 +81,6 @@ public class TaskExecutionLog {
 
 	public void setTask(Task task) {
 		this.task = task;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public LocalDateTime getAssignedAt() {
-		return assignedAt;
-	}
-
-	public void setAssignedAt(LocalDateTime assignedAt) {
-		this.assignedAt = assignedAt;
 	}
 
 	public boolean getIsReportAttached() {

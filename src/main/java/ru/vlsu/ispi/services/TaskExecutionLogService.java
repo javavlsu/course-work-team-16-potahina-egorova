@@ -21,15 +21,12 @@ public class TaskExecutionLogService {
         this.taskExecutionLogRepository = taskExecutionLogRepository;
     }
 
-    public TaskExecutionLog createTaskExecutionLog(Task task, User user, LocalDateTime assignedAt,
-                                                   boolean isReportAttached, String completionReport,
-                                                   MusicMedia musicMedia, VisualMedia visualMedia,
-                                                   TimerMode timerMode, LocalDateTime startTime,
-                                                   LocalDateTime endTime) {
+    public TaskExecutionLog createTaskExecutionLog(Task task, boolean isReportAttached,
+                                                   String completionReport, MusicMedia musicMedia,
+                                                   VisualMedia visualMedia, TimerMode timerMode,
+                                                   LocalDateTime startTime, LocalDateTime endTime) {
         TaskExecutionLog log = new TaskExecutionLog();
         log.setTask(task);
-        log.setUser(user);
-        log.setAssignedAt(assignedAt);
         log.setIsReportAttached(isReportAttached);
         log.setCompletionReport(completionReport);
         log.setMusicMedia(musicMedia);
@@ -45,8 +42,7 @@ public class TaskExecutionLogService {
         return taskExecutionLogRepository.findById(id);
     }
 
-    public TaskExecutionLog updateTaskExecutionLog(int id, Task task, User user,
-                                                   LocalDateTime assignedAt, boolean isReportAttached,
+    public TaskExecutionLog updateTaskExecutionLog(int id, Task task, boolean isReportAttached,
                                                    String completionReport, MusicMedia musicMedia,
                                                    VisualMedia visualMedia, TimerMode timerMode,
                                                    LocalDateTime startTime, LocalDateTime endTime) {
@@ -54,8 +50,6 @@ public class TaskExecutionLogService {
                 .orElseThrow(() -> new RuntimeException("Task execution log not found"));
 
         if (task != null) log.setTask(task);
-        if (user != null) log.setUser(user);
-        if (assignedAt != null) log.setAssignedAt(assignedAt);
         log.setIsReportAttached(isReportAttached);
         log.setCompletionReport(completionReport);
         if (musicMedia != null) log.setMusicMedia(musicMedia);
