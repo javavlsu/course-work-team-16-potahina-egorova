@@ -105,7 +105,12 @@ public class User {
 		return this.totalPoints;
 	}  
 
+//	public String toString() {
+//		return this.getId() + " " + this.name + " " + this.totalPoints;
+//	}
+
+	@Override
 	public String toString() {
-		return this.getId() + " " + this.name + " " + this.totalPoints;
+		return name != null ? name : "Неизвестный пользователь";
 	}
 }

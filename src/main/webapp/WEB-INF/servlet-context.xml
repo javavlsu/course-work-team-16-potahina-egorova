@@ -36,4 +36,20 @@
         <property name="characterEncoding" value="UTF-8" />
     </bean>
 
+    <!-- Регистрация конвертера -->
+    <bean id="userIdConverter" class="ru.vlsu.ispi.UserIdConverter"/>
+
+    <!-- Настройка конвертеров через ConversionService -->
+    <bean id="conversionService"
+          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <ref bean="userIdConverter"/>
+            </set>
+        </property>
+    </bean>
+
+    <!-- Включение MVC с указанием сервиса конвертации -->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
 </beans>

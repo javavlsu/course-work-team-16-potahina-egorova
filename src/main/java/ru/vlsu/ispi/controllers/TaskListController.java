@@ -1,5 +1,6 @@
 package ru.vlsu.ispi.controllers;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,7 +35,12 @@ public class TaskListController {
     public String showTaskListForm(@RequestParam(value = "id", required = false) Integer id, Model model) {
         if (id != null && id > 0) {
             TaskList taskList = jpaService.runInTransaction(entityManager -> {
-                return entityManager.find(TaskList.class, id);
+                TaskList list = entityManager.find(TaskList.class, id);
+                if (list != null) {
+                    // Принудительно загружаем User
+                    Hibernate.initialize(list.getUser());
+                }
+                return list;
             });
 
             if (taskList == null) {
@@ -48,23 +54,27 @@ public class TaskListController {
         List<User> users = jpaService.runInTransaction(entityManager -> {
             return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
         });
-        model.addAttribute("users", users); // Передайте список категорий в шаблон
+        model.addAttribute("users", users);
 
         return "taskListForm";
     }
 
     @PostMapping("/add_edit")
     public String addEditTaskList(@Valid @ModelAttribute("taskList") TaskList taskList,
-                                 BindingResult result,
-                                 Model model) {
+                                  BindingResult result,
+                                  Model model) {
         if (result.hasErrors()) {
             return "taskListForm";
         }
 
         jpaService.runInTransaction(entityManager -> {
-            if (taskList.getId() == 0) { // Создание нового объекта
+            if (taskList.getId() == 0) {
                 entityManager.persist(taskList);
-            } else { // Обновление существующего объекта
+            } else {
+                // Обновляем связь с User
+                if (taskList.getUser() != null) {
+                    taskList.setUser(entityManager.merge(taskList.getUser()));
+                }
                 entityManager.merge(taskList);
             }
             return null;
