@@ -28,13 +28,13 @@ public class TaskExecutionLog {
 	private boolean isReportAttached;
 	@Column
 	private String completionReport;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="music_media_id")
 	private MusicMedia musicMedia;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="visual_media_id")
 	private VisualMedia visualMedia;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="timer_mode_id")
 	private TimerMode timerMode;
 	@Column

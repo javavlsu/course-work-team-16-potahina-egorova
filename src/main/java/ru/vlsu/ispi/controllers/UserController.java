@@ -53,7 +53,7 @@ public class UserController {
         if (userId == 0) {
             // Создаём нового пользователя
             userService.createUser(
-                    user.getUsername(),
+                    user.getName(),
                     user.getPassword(),
                     user.getEmail(),
                     user.getPhoneNumber(),
@@ -63,7 +63,7 @@ public class UserController {
             // Обновляем существующего пользователя
             userService.updateUser(
                     userId,
-                    user.getUsername(),
+                    user.getName(),
                     user.getPassword(),
                     user.getEmail(),
                     user.getPhoneNumber(),
@@ -83,7 +83,7 @@ public class UserController {
         }
 
         userService.createUser(
-                user.getUsername(),
+                user.getName(),
                 user.getPassword(),
                 user.getEmail(),
                 user.getPhoneNumber(),
