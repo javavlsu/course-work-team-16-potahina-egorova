@@ -40,7 +40,7 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
-    <jpa:repositories base-package="ru.vlsu.ispi"/>
+    <jpa:repositories base-package="ru.vlsu.ispi.repositories"/>
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />

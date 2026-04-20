@@ -14,7 +14,7 @@ public class User {
 	@Column
 	private int id;
 	@Column
-	private String name;
+	private String username;
 	@Column
 	private String password;
 	@Column
@@ -33,9 +33,9 @@ public class User {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Notification> notifications = new ArrayList<>();
 
-	public User(String name, String password, String email,
+	public User(String username, String password, String email,
 				String phone_number, int total_points) {
-		this.name = name;
+		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.phoneNumber = phone_number;
@@ -65,12 +65,12 @@ public class User {
 		return this.id;
 	}
 
-	public void setName(String name) {
-		this.name = name; 
+	public void setUsername(String username) {
+		this.username = username;
 	} 
 
-	public String getName() {
-		return this.name; 
+	public String getUsername() {
+		return this.username;
 	} 
 
 	public void setPassword(String password) {
@@ -111,6 +111,6 @@ public class User {
 
 	@Override
 	public String toString() {
-		return name != null ? name : "Неизвестный пользователь";
+		return username != null ? username : "Неизвестный пользователь";
 	}
 }

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Выполнить задачу</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
+    .navbar { display: flex; background-color: #00b3a8; padding: 10px; }
+    .logo { background-color: #00b3a8; color: white; padding: 10px; font-weight: bold; }
+    .nav-item { color: #000; padding: 10px; margin-left: 10px; text-decoration: none; }
+    .nav-profile { }
+    .nav-main { background-color: #a8d8a8; }
+    .nav-achievements { background-color: #00a8b3; }
+    .nav-desktop { background-color: #ff7f50; }
+    .nav-item:hover { opacity: 0.8; }
+    .content { padding: 20px; }
+    .task-form { background-color: #ffe4e1; padding: 20px; max-width: 600px; margin: 0 auto; }
+    label { display: block; margin-bottom: 5px; }
+    input, select { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; }
+    .save-button { background-color: #ff4500; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; }
+    .footer { background-color: #a8d8a8; text-align: center; padding: 10px; position: fixed; bottom: 0; width: 100%; }
+    .media-section {
+      margin-bottom: 30px;
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .media-selector {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .player-container { margin-top: 10px; }
+    audio, video { display: none; }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">
+      <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+    </div>
+    <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
+    <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
+    <a th:href="@{/table}" href="table.html" class="nav-item nav-desktop">Рабочий стол</a>
+    <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
+  </div>
+
+  <div class="content">
+    <h2>Выполнить задачу: <span th:text="${log.task.title}"></span></h2>
+
+    <!-- Аудиоплеер -->
+    <div class="media-section">
+      <h3>Фоновая музыка</h3>
+      <select th:field="*{musicMedia.id}"
+              th:onchange="'updateAudioPlayer(this.value)'"
+              class="media-selector">
+        <option value="">Без музыки</option>
+        <option th:each="music : ${musicMediaList}"
+                th:value="${music.id}"
+                th:text="${music.name}"
+                th:selected="${log.musicMedia != null and log.musicMedia.id == music.id}">
+        </option>
+      </select>
+
+      <div id="audio-player-container" class="player-container">
+        <audio id="audio-player" controls style="width: 100%;">
+          <source id="audio-source" type="audio/mpeg">
+          Ваш браузер не поддерживает аудиоэлемент.
+        </audio>
+      </div>
+    </div>
+
+    <!-- Видеоплеер -->
+    <div class="media-section">
+      <h3>Визуальное сопровождение</h3>
+      <select th:field="*{visualMedia.id}"
+              th:onchange="'updateVideoPlayer(this.value)'"
+              class="media-selector">
+        <option value="">Без видео</option>
+        <option th:each="video : ${visualMediaList}"
+                th:value="${video.id}"
+                th:text="${video.name}"
+                th:selected="${log.visualMedia != null and log.visualMedia.id == video.id}">
+        </option>
+      </select>
+
+      <div id="video-player-container" class="player-container">
+        <video id="video-player" controls width="100%" height="300">
+          <source id="video-source" type="video/mp4">
+          Ваш браузер не поддерживает видеоэлемент.
+        </video>
+      </div>
+    </div>
+
+    <!-- Форма для сохранения выбора медиа -->
+    <form th:action="@{/task-execution/save-media/{logId}(logId=${log.id})}"
+          th:object="${log}" method="post">
+      <input type="hidden" th:field="*{id}"/>
+      <button type="submit" class="save-button">Сохранить выбор медиа</button>
+    </form>
+  </div>
+
+  <div class="footer">
+    © Все-приложения, 2025
+  </div>
+
+  <script>
+    function updateAudioPlayer(musicId) {
+        const audioPlayer = document.getElementById('audio-player');
+        const audioSource = document.getElementById('audio-source');
+
+        if (!musicId) {
+            audioPlayer.style.display = 'none';
+            return;
+        }
+
+        fetch('/api/music/' + musicId)
+            .then(response => response.json())
+            .then(data => {
+                audioSource.src = convertGoogleDriveUrl(data.url);
+                audioPlayer.load();
+                audioPlayer.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки аудио:', error);
+                alert('Не удалось загрузить аудиофайл');
+            });
+    }
+
+    function updateVideoPlayer(videoId) {
+        const videoPlayer = document.getElementById('video-player');
+        const videoSource = document.getElementById('video-source');
+
+        if (!videoId) {
+            videoPlayer.style.display = 'none';
+            return;
+        }
+
+        fetch('/api/video/' + videoId)
+            .then(response => response.json())
+            .then(data => {
+                videoSource.src = convertGoogleDriveUrl(data.url);
+                videoPlayer.load();
+                videoPlayer.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки видео:', error);
+                alert('Не удалось загрузить видеофайл');
+            });
+    }
+
+    // Функция для преобразования Google Drive ссылок
+    function convertGoogleDriveUrl(driveUrl) {
+        // Извлекаем ID файла из ссылки
+        const match = driveUrl.match(/\/d\/([^\/]+)\//);
+        if (match && match[1]) {
+            return 'https://drive.google.com/uc?export=download&id=' + match[1];
+        }
+        return driveUrl; // если не Google Drive, возвращаем оригинальную ссылку
+    }
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        const initialMusicId = /*[[${log.musicMedia?.id}]]*/ null;
+        const initialVideoId = /*[[${log.visualMedia?.id}]]*/ null;
+
+        if (initialMusicId) {
+            updateAudioPlayer(initialMusicId);
+        }
+        if (initialVideoId) {
+            updateVideoPlayer(initialVideoId);
+        }
+    });
+  </script>
+</body>
+</html>

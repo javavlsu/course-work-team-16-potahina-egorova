@@ -16,6 +16,11 @@ public class VisualMedia {
 	@Column
 	private String url;
 
+	public VisualMedia(String name, String url) {
+		this.name = name;
+		this.url = url;
+	}
+
 	public VisualMedia() {}
 
 	@Override

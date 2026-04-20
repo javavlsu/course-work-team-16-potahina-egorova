@@ -13,9 +13,11 @@ public class TaskExecutionLog {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private int id;
-	@OneToOne(cascade = CascadeType.PERSIST)
+
+	@OneToOne(cascade = CascadeType.MERGE)
 	@JoinColumn
 	private Task task;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="assigned_to_user_id")
 	private User user;
@@ -37,10 +39,10 @@ public class TaskExecutionLog {
 	private TimerMode timerMode;
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-	private LocalDateTime start_time;
+	private LocalDateTime startTime;
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-	private LocalDateTime end_time;
+	private LocalDateTime endTime;
 
 	public TaskExecutionLog() {}
 
@@ -65,27 +67,83 @@ public class TaskExecutionLog {
 		return this.id;
 	}
 
-	public void setMusicMediaId(MusicMedia musicMedia) {
+	public Task getTask() {
+		return task;
+	}
+
+	public void setTask(Task task) {
+		this.task = task;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public LocalDateTime getAssignedAt() {
+		return assignedAt;
+	}
+
+	public void setAssignedAt(LocalDateTime assignedAt) {
+		this.assignedAt = assignedAt;
+	}
+
+	public boolean getIsReportAttached() {
+		return isReportAttached;
+	}
+
+	public void setIsReportAttached(boolean reportAttached) {
+		isReportAttached = reportAttached;
+	}
+
+	public String getCompletionReport() {
+		return completionReport;
+	}
+
+	public void setCompletionReport(String completionReport) {
+		this.completionReport = completionReport;
+	}
+
+	public MusicMedia getMusicMedia() {
+		return musicMedia;
+	}
+
+	public void setMusicMedia(MusicMedia musicMedia) {
 		this.musicMedia = musicMedia;
-	} 
+	}
 
-	public MusicMedia getMusicMediaId() {
-		return this.musicMedia;
-	}  
+	public VisualMedia getVisualMedia() {
+		return visualMedia;
+	}
 
-	public void setVisualMediaId(VisualMedia visualMedia) {
+	public void setVisualMedia(VisualMedia visualMedia) {
 		this.visualMedia = visualMedia;
-	} 
+	}
 
-	public VisualMedia getVisualMediaId() {
-		return this.visualMedia;
-	} 
+	public TimerMode getTimerMode() {
+		return timerMode;
+	}
 
-	public void setTimerModeId(TimerMode timerMode) {
+	public void setTimerMode(TimerMode timerMode) {
 		this.timerMode = timerMode;
-	} 
+	}
 
-	public TimerMode getTimerModeId() {
-		return this.timerMode;
-	} 
+	public LocalDateTime getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(LocalDateTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public LocalDateTime getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(LocalDateTime endTime) {
+		this.endTime = endTime;
+	}
 }

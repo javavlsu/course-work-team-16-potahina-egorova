@@ -30,7 +30,7 @@ public class UserService {
     public User updateUser(int id, String name, String password,
                            String email, String phoneNumber, int totalPoints) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        user.setName(name);
+        user.setUsername(name);
         user.setPassword(password);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
@@ -45,5 +45,21 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public User getTestUser() {
+        return userRepository.findByUsername("testuser")
+                .orElseGet(() -> {
+                    User testUser = new User();
+                    testUser.setUsername("testuser");
+                    testUser.setEmail("test@example.com");
+                    testUser.setPhoneNumber("1234567890");
+                    testUser.setTotalPoints(0);
+                    return userRepository.save(testUser);
+                });
     }
 }

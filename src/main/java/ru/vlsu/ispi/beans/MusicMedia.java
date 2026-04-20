@@ -16,6 +16,11 @@ public class MusicMedia {
 	@Column
 	private String url;
 
+	public MusicMedia(String name, String url) {
+		this.name = name;
+		this.url = url;
+	}
+
 	public MusicMedia() {}
 
 	@Override

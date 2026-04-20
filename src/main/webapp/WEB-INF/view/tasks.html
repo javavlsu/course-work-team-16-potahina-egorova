@@ -65,6 +65,7 @@
           <td th:text="${#temporals.format(t.deadlineAt, 'dd.MM.yyyy HH:mm')}"></td>
           <td th:text="${t.points}"></td>
           <td>
+            <a th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${t.id})}">Выполнить</a>
             <a th:href="@{'/tasks/edit?id=' + ${t.id}}">Редактировать</a>
             <a th:href="@{'/tasks/delete?id=' + ${t.id}}"
                onclick="return confirm('Удалить задачу?');">Удалить</a>
