@@ -1,5 +1,6 @@
 package ru.vlsu.ispi.controllers;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -42,20 +43,25 @@ public class TaskController {
         if (id != null && id > 0) {
             task = taskService.getTaskById(id)
                     .orElseThrow(() -> new RuntimeException("Task not found"));
+
+            // Принудительно загружаем связанные объекты
+            if (task.getUser() != null) {
+                Hibernate.initialize(task.getUser());
+            }
+            if (task.getTaskList() != null) {
+                Hibernate.initialize(task.getTaskList());
+            }
         } else {
             task = new Task();
         }
         model.addAttribute("task", task);
 
-        // Получаем всех пользователей для выпадающего списка
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
 
-        // Получаем все списки задач для выпадающего списка
         List<TaskList> taskLists = taskListService.getAllTaskLists();
         model.addAttribute("taskLists", taskLists);
 
-        // Добавляем значения enum в модель
         model.addAttribute("categories", Arrays.asList(Task.Category.values()));
         model.addAttribute("statuses", Arrays.asList(Task.Status.values()));
 

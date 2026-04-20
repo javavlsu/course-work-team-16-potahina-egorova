@@ -37,7 +37,8 @@
     </bean>
 
     <!-- Регистрация конвертера -->
-    <bean id="userIdConverter" class="ru.vlsu.ispi.UserIdConverter"/>
+    <bean id="userIdConverter" class="ru.vlsu.ispi.converters.UserIdConverter"/>
+    <bean id="taskListIdConverter" class="ru.vlsu.ispi.converters.TaskListIdConverter"/>
 
     <!-- Настройка конвертеров через ConversionService -->
     <bean id="conversionService"
@@ -45,6 +46,7 @@
         <property name="converters">
             <set>
                 <ref bean="userIdConverter"/>
+                <ref bean="taskListIdConverter"/>
             </set>
         </property>
     </bean>

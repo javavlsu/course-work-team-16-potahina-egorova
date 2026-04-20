@@ -72,4 +72,9 @@ public class TaskList {
 	public List<Task> getTasks() {
 		return this.tasks;
 	}
+
+	@Override
+	public String toString() {
+		return title != null ? title : "-";
+	}
 }
