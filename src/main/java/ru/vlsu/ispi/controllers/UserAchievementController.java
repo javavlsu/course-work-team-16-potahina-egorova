@@ -37,7 +37,6 @@ public class UserAchievementController {
         return "userAchievements";
     }
 
-
     @GetMapping({"/add", "/edit"})
     public String showUserAchievementForm(@RequestParam(value = "id", required = false) Integer id, Model model) {
         UserAchievement userAchievement;
