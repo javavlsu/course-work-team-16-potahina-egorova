@@ -19,7 +19,7 @@ public class LoginController {
 
     @GetMapping("/login")
     public String showLoginForm(Model model) {
-        return "login"; // Возвращает login.html из /WEB-INF/view/
+        return "login";
     }
 
     @PostMapping("/login")
@@ -33,7 +33,7 @@ public class LoginController {
 
         if (userOpt.isPresent()) {
             session.setAttribute("user", userOpt.get());
-            return "redirect:/users";
+            return "redirect:/profile";
         } else {
             model.addAttribute("error", "Неверные email или пароль");
             return "login";

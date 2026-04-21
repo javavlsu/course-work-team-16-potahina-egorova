@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.vlsu.ispi.beans.User;
+import ru.vlsu.ispi.beans.UserAchievement;
 import ru.vlsu.ispi.services.UserService;
 
 import javax.validation.Valid;
