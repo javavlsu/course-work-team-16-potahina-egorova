@@ -12,6 +12,7 @@ import ru.vlsu.ispi.services.TaskListService;
 import ru.vlsu.ispi.services.TaskService;
 import ru.vlsu.ispi.services.UserService;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,10 @@ public class TaskController {
     }
 
     @GetMapping
-    public String allTasks(Model model) {
+    public String allTasks(HttpSession session, Model model) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
         List<Task> tasks = taskService.getAllTasks();
         model.addAttribute("tasks", tasks);
         return "tasks";
@@ -38,7 +42,12 @@ public class TaskController {
 
 
     @GetMapping({"/add", "/edit"})
-    public String showTaskForm(@RequestParam(value = "id", required = false) Integer id, Model model) {
+    public String showTaskForm(@RequestParam(value = "id", required = false) Integer id, Model model,
+                               HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         Task task;
         if (id != null && id > 0) {
             task = taskService.getTaskById(id)
@@ -71,7 +80,11 @@ public class TaskController {
     @PostMapping("/add_edit")
     public String addEditTask(@Valid @ModelAttribute("task") Task task,
                               BindingResult result,
-                              Model model) {
+                              Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         if (result.hasErrors()) {
             return "taskForm";
         }
@@ -111,7 +124,11 @@ public class TaskController {
     }
 
     @GetMapping("/delete")
-    public String deleteTask(@RequestParam("id") int id) {
+    public String deleteTask(@RequestParam("id") int id, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         taskService.deleteTask(id);
         return "redirect:/tasks";
     }

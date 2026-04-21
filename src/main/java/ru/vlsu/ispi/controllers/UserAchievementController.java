@@ -10,6 +10,7 @@ import ru.vlsu.ispi.services.TaskService;
 import ru.vlsu.ispi.services.UserAchievementService;
 import ru.vlsu.ispi.services.UserService;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -31,14 +32,23 @@ public class UserAchievementController {
     }
 
     @GetMapping
-    public String allUserAchievements(Model model) {
+    public String allUserAchievements(Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         List<UserAchievement> userAchievements = userAchievementService.getAllUserAchievements();
         model.addAttribute("userAchievements", userAchievements);
         return "userAchievements";
     }
 
     @GetMapping({"/add", "/edit"})
-    public String showUserAchievementForm(@RequestParam(value = "id", required = false) Integer id, Model model) {
+    public String showUserAchievementForm(@RequestParam(value = "id", required = false) Integer id,
+                                          Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         UserAchievement userAchievement;
         if (id != null && id > 0) {
             userAchievement = userAchievementService.getUserAchievementById(id)
@@ -65,7 +75,11 @@ public class UserAchievementController {
     @PostMapping("/add_edit")
     public String addEditUserAchievement(@Valid @ModelAttribute("userAchievement") UserAchievement userAchievement,
                               BindingResult result,
-                              Model model) {
+                              Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         if (result.hasErrors()) {
             return "userAchievementForm";
         }
@@ -91,7 +105,12 @@ public class UserAchievementController {
     }
 
     @GetMapping("/delete")
-    public String deleteUserAchievement(@RequestParam("id") int id) {
+    public String deleteUserAchievement(@RequestParam("id") int id,
+                                        HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         userAchievementService.deleteUserAchievement(id);
         return "redirect:/userAchievements";
     }

@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.vlsu.ispi.beans.*;
 import ru.vlsu.ispi.services.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Arrays;
@@ -39,10 +40,11 @@ public class TaskExecutionLogController {
     }
 
     @GetMapping("/start-execution")
-    public String startTaskExecution(
-            @RequestParam("taskId") Integer taskId,
-            Model model
-    ) {
+    public String startTaskExecution(@RequestParam("taskId") Integer taskId,
+            Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
 
         // Получаем задачу, но не передаём её напрямую в newLog
         Task task = taskService.getTaskById(taskId)
@@ -67,7 +69,12 @@ public class TaskExecutionLogController {
     }
 
     @GetMapping("/task-execution")
-    public String showTaskExecution(@RequestParam("id") Integer logId, Model model) {
+    public String showTaskExecution(@RequestParam("id") Integer logId, Model model,
+                                    HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         TaskExecutionLog log = taskExecutionLogService.getTaskExecutionLogById(logId)
                 .orElseThrow(() -> new RuntimeException("Log not found"));
 
@@ -84,11 +91,14 @@ public class TaskExecutionLogController {
 
 
     @PostMapping("/task-execution/save-media/{logId}")
-    public String saveMediaSelection(
-            @PathVariable Integer logId,
+    public String saveMediaSelection(@PathVariable Integer logId,
             @ModelAttribute TaskExecutionLog updatedLog,
-            RedirectAttributes redirectAttributes
-    ) {
+            RedirectAttributes redirectAttributes,
+                                     HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         TaskExecutionLog existingLog = taskExecutionLogService
                 .getTaskExecutionLogById(logId)
                 .orElseThrow(() -> new ResponseStatusException(

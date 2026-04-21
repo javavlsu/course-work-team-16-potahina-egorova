@@ -8,6 +8,7 @@ import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.beans.UserAchievement;
 import ru.vlsu.ispi.services.UserService;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -22,14 +23,23 @@ public class UserController {
     }
 
     @GetMapping
-    public String listUsers(Model model) {
+    public String listUsers(Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "users";
     }
 
     @GetMapping({"/add", "/edit"})
-    public String showUserForm(@RequestParam(value = "id", required = false) Integer id, Model model) {
+    public String showUserForm(@RequestParam(value = "id", required = false) Integer id,
+                               Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         if (id != null && id > 0) {
             User user = userService.getUserById(id)
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -45,7 +55,11 @@ public class UserController {
     @PostMapping("/edit")
     public String editUser(@Valid @ModelAttribute("user") User user,
                            BindingResult result,
-                           Model model) {
+                           Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         if (result.hasErrors()) {
             return "settings";
         }
@@ -78,7 +92,11 @@ public class UserController {
     @PostMapping("/add")
     public String addUser(@Valid @ModelAttribute("user") User user,
                           BindingResult result,
-                          Model model) {
+                          Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         if (result.hasErrors()) {
             return "settings";
         }
@@ -95,13 +113,22 @@ public class UserController {
     }
 
     @GetMapping("/delete")
-    public String deleteUser(@RequestParam("id") int id) {
+    public String deleteUser(@RequestParam("id") int id, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         userService.deleteUser(id);
         return "redirect:/users";
     }
 
     @GetMapping("/table")
-    public String showTable(@RequestParam("id") int id, Model model) {
+    public String showTable(@RequestParam("id") int id, Model model,
+                            HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         User user = userService.getUserById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         model.addAttribute("user", user);
@@ -109,7 +136,12 @@ public class UserController {
     }
 
     @GetMapping("/user_table")
-    public String toUsersTable(@RequestParam("id") int id) {
+    public String toUsersTable(@RequestParam("id") int id,
+                               HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         return "redirect:/users/table?id=" + id;
     }
 }

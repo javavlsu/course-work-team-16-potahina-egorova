@@ -9,6 +9,7 @@ import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.services.JPAService;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -22,7 +23,11 @@ public class TaskListController {
     }
 
     @GetMapping
-    public String allTaskLists(Model model) {
+    public String allTaskLists(Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         List<TaskList> taskLists = jpaService.runInTransaction(entityManager -> {
             return entityManager.createQuery("SELECT tl FROM TaskList tl", TaskList.class).getResultList();
         });
@@ -32,7 +37,12 @@ public class TaskListController {
     }
 
     @GetMapping({"/add", "/edit"})
-    public String showTaskListForm(@RequestParam(value = "id", required = false) Integer id, Model model) {
+    public String showTaskListForm(@RequestParam(value = "id", required = false) Integer id,
+                                   Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         if (id != null && id > 0) {
             TaskList taskList = jpaService.runInTransaction(entityManager -> {
                 TaskList list = entityManager.find(TaskList.class, id);
@@ -62,7 +72,11 @@ public class TaskListController {
     @PostMapping("/add_edit")
     public String addEditTaskList(@Valid @ModelAttribute("taskList") TaskList taskList,
                                   BindingResult result,
-                                  Model model) {
+                                  Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         if (result.hasErrors()) {
             return "taskListForm";
         }
@@ -84,7 +98,11 @@ public class TaskListController {
     }
 
     @GetMapping("/delete")
-    public String deleteTaskList(@RequestParam("id") int id) {
+    public String deleteTaskList(@RequestParam("id") int id, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         jpaService.runInTransaction(entityManager -> {
             TaskList taskList = entityManager.find(TaskList.class, id);
             if (taskList != null) {
