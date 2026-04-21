@@ -62,4 +62,17 @@ public class UserService {
                     return userRepository.save(testUser);
                 });
     }
+
+    public User registerUser(String name, String password, String email, String phoneNumber) {
+        // Проверка, существует ли пользователь с таким email
+        if (userRepository.findByEmailAndPassword(email, password).isPresent()) {
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
+        }
+        User user = new User(name, password, email, phoneNumber, 0);
+        return userRepository.save(user);
+    }
+
+    public Optional<User> authenticate(String email, String password) {
+        return userRepository.findByEmailAndPassword(email, password);
+    }
 }

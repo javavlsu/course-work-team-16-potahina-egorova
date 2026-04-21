@@ -15,6 +15,17 @@
             <property name="hibernate.ddl-auto" value="update"/>
             <!-- Если вы полностью переходите на hibernate.ddl-auto, можно убрать -->
             <!-- <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/> -->
+
+<!--            <property name="hibernate.connection.release_mode" value="after_transaction"/>-->
+<!--            <property name="hibernate.connection.shutdown" value="true"/>-->
+<!--            <property name="hibernate.c3p0.idle_test_period" value="300"/> &lt;!&ndash; 5 минут &ndash;&gt;-->
+<!--            <property name="hibernate.c3p0.timeout" value="300"/>     &lt;!&ndash; 5 минут &ndash;&gt;-->
+
+<!--            &lt;!&ndash; Дополнительные настройки пула соединений &ndash;&gt;-->
+<!--            <property name="hibernate.c3p0.min_size" value="5"/>-->
+<!--            <property name="hibernate.c3p0.max_size" value="20"/>-->
+<!--            <property name="hibernate.c3p0.acquire_increment" value="1"/>-->
+<!--            <property name="hibernate.c3p0.validate" value="true"/>-->
         </properties>
     </persistence-unit>
 </persistence>

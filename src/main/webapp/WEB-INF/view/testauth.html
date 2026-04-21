@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Панель управления</title>
+</head>
+<body>
+    <h2>Добро пожаловать, <span th:text="${session.user.name}"></span>!</h2>
+    <p>Email: <span th:text="${session.user.email}"></span></p>
+    <p>Телефон: <span th:text="${session.user.phoneNumber}"></span></p>
+    <p>Баллы: <span th:text="${session.user.totalPoints}"></span></p>
+    <a href="/logout">Выйти</a>
+</body>
+</html>
