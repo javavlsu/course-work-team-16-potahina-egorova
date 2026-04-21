@@ -10,7 +10,7 @@ public class MusicMedia {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
-	private int id;
+	private Integer id;
 	@Column
 	private String name;
 	@Column
@@ -36,11 +36,11 @@ public class MusicMedia {
 		return Objects.hash(id);
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 

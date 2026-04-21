@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчет о выполнении задачи</title>
+    <style>
+        /* Простые стили для формы отчета */
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding:
+        20px; }
+        .completion-container { max-width: 600px; margin: 50px auto; background:
+        white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px
+        rgba(0,0,0,0.1); }
+        textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius:
+        4px; border: 1px solid #ccc; font-family: inherit; }
+        .btn-submit { background-color: #007bff; color: white; border: none;
+        padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 15px;
+        font-size: 16px; }
+        .btn-submit:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+<div class="completion-container">
+    <h2>Отчет о выполнении</h2>
+    <p>Задача: <strong th:text="${log.task.title}"></strong></p>
+    <form th:action="@{/tasks/finish-execution}" method="post">
+        <input type="hidden" name="logId" th:value="${log.id}" />
+        <label for="report">Напишите несколько слов о проделанной работе
+            (опционально):</label>
+        <textarea id="report" name="report" rows="6" placeholder="Я успешно
+завершил эту задачу..."></textarea>
+        <button type="submit" class="btn-submit">Отправить и завершить</button>
+    </form>
+</div>
+</body>
+</html>

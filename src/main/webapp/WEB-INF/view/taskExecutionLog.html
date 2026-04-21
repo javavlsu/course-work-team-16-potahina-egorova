@@ -51,56 +51,80 @@
 <div class="content">
   <h2>Выполнить задачу: <span th:text="${log.task.title}"></span></h2>
 
-  <!-- Аудиоплеер -->
-  <div class="media-section">
-    <h3>Фоновая музыка</h3>
-    <select th:field="*{musicMedia.id}"
-            th:onchange="updateAudioPlayer(this.value)"
-            class="media-selector">
-      <option value="">Без музыки</option>
-      <option th:each="music : ${musicMediaList}"
-              th:value="${music.id}"
-              th:text="${music.name}"
-              th:selected="${log.musicMedia != null and log.musicMedia.id == music.id}">
-      </option>
-    </select>
-
-    <div id="audio-player-container" class="player-container">
-      <audio id="audio-player" controls style="width: 100%;">
-        <source id="audio-source" type="audio/mpeg">
-        Ваш браузер не поддерживает аудиоэлемент.
-      </audio>
-    </div>
-  </div>
-
-  <!-- Видеоплеер -->
-  <div class="media-section">
-    <h3>Визуальное сопровождение</h3>
-    <select th:field="*{visualMedia.id}"
-            th:onchange="updateVideoPlayer(this.value)"
-            class="media-selector">
-      <option value="">Без видео</option>
-      <option th:each="video : ${visualMediaList}"
-              th:value="${video.id}"
-              th:text="${video.name}"
-              th:selected="${log.visualMedia != null and log.visualMedia.id == video.id}">
-      </option>
-    </select>
-
-    <div id="video-player-container" class="player-container">
-      <video id="video-player" controls width="100%" height="300">
-        <source id="video-source" type="video/mp4">
-        Ваш браузер не поддерживает видеоэлемент.
-      </video>
-    </div>
-  </div>
-
   <!-- Форма для сохранения выбора медиа -->
-  <form th:action="@{/task-execution/save-media/{logId}(logId=${log.id})"
-        th:object="${log}" method="post">
+  <form th:action="@{/tasks/task-execution/save-media/{logId}
+(logId=${log.id})}" th:object="${log}" method="post">
     <input type="hidden" th:field="*{id}"/>
+    <div class="media-section">
+      <h3>Фоновая музыка</h3>
+      <select th:field="*{musicMedia.id}"
+              th:onchange="updateAudioPlayer(this.value)"
+              class="media-selector">
+        <option value="">Без музыки</option>
+        <option th:each="music : ${musicMediaList}"
+                th:value="${music.id}"
+                th:text="${music.name}">
+        </option>
+      </select>
+      <div id="audio-player-container" class="player-container">
+        <audio id="audio-player" controls style="width: 100%;">
+          <source id="audio-source" type="audio/mpeg">
+          Ваш браузер не поддерживает аудиоэлемент.
+        </audio>
+      </div>
+    </div>
+    <div class="media-section">
+      <h3>Визуальное сопровождение</h3>
+      <select th:field="*{visualMedia.id}"
+              th:onchange="updateVideoPlayer(this.value)"
+              class="media-selector">
+        <option value="">Без видео</option>
+        <option th:each="video : ${visualMediaList}"
+                th:value="${video.id}"
+                th:text="${video.name}">
+        </option>
+      </select>
+      <div id="video-player-container" class="player-container">
+        <video id="video-player" controls width="100%" height="300">
+          <source id="video-source" type="video/mp4">
+          Ваш браузер не поддерживает видеоэлемент.
+        </video>
+      </div>
+    </div>
     <button type="submit" class="save-button">Сохранить выбор медиа</button>
   </form>
+
+  <div class="execution-controls" style="margin-top: 30px; padding: 20px;
+background: #f9f9f9; border-radius: 8px;">
+    <h3>Управление задачей</h3>
+    <button id="startTimerBtn" class="save-button" onclick="startTimer()"
+            style="background-color: #28a745;">Запустить таймер</button>
+    <div id="timerDisplay" style="font-size: 32px; font-weight: bold; margin:
+15px 0; display: none; color: #333;">00:00</div>
+    <a th:href="@{/tasks/complete-execution(logId=${log.id})}" class="save
+button" style="background-color: #dc3545; text-decoration: none; display:
+inline-block; text-align: center; margin-top: 10px;">Завершить задачу</a>
+  </div>
+  <script>
+    // Простой скрипт таймера (добавьте его к существующим скриптам внизустраницы)
+    let timerInterval;
+    function startTimer() {
+    const display = document.getElementById('timerDisplay');
+    const btn = document.getElementById('startTimerBtn');
+    display.style.display = 'block';
+    btn.innerText = 'Таймер запущен';
+    btn.disabled = true;
+    btn.style.backgroundColor = '#6c757d';
+    let seconds = 0;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+    seconds++;
+    let mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+    let secs = String(seconds % 60).padStart(2, '0');
+    display.innerText = mins + ':' + secs;
+    }, 1000);
+    }
+  </script>
 </div>
 
 

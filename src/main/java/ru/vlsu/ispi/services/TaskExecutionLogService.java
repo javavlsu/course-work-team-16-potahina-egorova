@@ -76,4 +76,8 @@ public class TaskExecutionLogService {
     public Optional<TaskExecutionLog> getTaskExecutionLogById(Integer id) {
         return taskExecutionLogRepository.findById(id);
     }
+
+    public Optional<TaskExecutionLog> findByTaskId(Integer taskId) {
+        return taskExecutionLogRepository.findByTaskId(taskId);
+    }
 }

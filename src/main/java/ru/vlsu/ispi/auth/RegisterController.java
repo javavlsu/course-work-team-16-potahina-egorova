@@ -30,7 +30,7 @@ public class RegisterController {
 
         try {
             User user = userService.registerUser(name, password, email, phoneNumber);
-            return "redirect:/login";
+            return "redirect:/profile";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             return "register";

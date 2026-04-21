@@ -75,4 +75,30 @@ public class UserService {
     public Optional<User> authenticate(String email, String password) {
         return userRepository.findByEmailAndPassword(email, password);
     }
+
+
+    public User save(User user) {
+        // Валидация обязательных полей
+        if (user.getName() == null || user.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Имя пользователя не может быть пустым");
+        }
+        if (user.getEmail() == null || !isValidEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Некорректный email");
+        }
+        if (user.getPassword() == null || user.getPassword().length() < 6) {
+            throw new IllegalArgumentException("Пароль должен содержать минимум 6 символов");
+        }
+
+        // Установка значений по умолчанию
+        if (user.getTotalPoints() < 0) {
+            user.setTotalPoints(0);
+        }
+
+        return userRepository.save(user);
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        return email != null && email.matches(emailRegex);
+    }
 }

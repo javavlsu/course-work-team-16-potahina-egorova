@@ -65,8 +65,30 @@ public class TaskService {
         taskRepository.deleteById(id);
     }
 
-
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
+    }
+
+    public Task save(Task task) {
+        // Валидация обязательных полей
+        if (task.getTitle() == null || task.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Заголовок задачи не может быть пустым");
+        }
+        if (task.getUser() == null) {
+            throw new IllegalArgumentException("Автор задачи не указан");
+        }
+
+        // Установка значений по умолчанию
+        if (task.getCategory() == null) {
+            task.setCategory(Category.Other);
+        }
+        if (task.getStatus() == null) {
+            task.setStatus(Status.NotStarted);
+        }
+        if (task.getAssignedAt() == null) {
+            task.setAssignedAt(LocalDateTime.now());
+        }
+
+        return taskRepository.save(task);
     }
 }
