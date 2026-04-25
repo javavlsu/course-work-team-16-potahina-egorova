@@ -1,6 +1,9 @@
 package ru.vlsu.ispi.controllers;
 
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -41,13 +44,36 @@ public class TaskController {
 //    }
 
     @GetMapping
-    public String showUserTasks(Model model, HttpSession session) {
+    public String showUserTasks(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "category", required = false) Task.Category category,
+            @RequestParam(value = "status", required = false) Task.Status status,
+            @RequestParam(value = "search", required = false) String search,
+            Model model,
+            HttpSession session) {
+
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
             return "redirect:/login";
         }
-        List<Task> userTasks = taskService.findTasksByUser(currentUser);
-        model.addAttribute("tasks", userTasks);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Task> taskPage = taskService.findTasksByUserWithFilters(
+                currentUser, category, status, search, pageable
+        );
+
+        model.addAttribute("tasks", taskPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", taskPage.getTotalPages());
+        model.addAttribute("totalElements", taskPage.getTotalElements());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("category", category);
+        model.addAttribute("status", status);
+        model.addAttribute("search", search);
+        model.addAttribute("categories", Arrays.asList(Task.Category.values()));
+        model.addAttribute("statuses", Arrays.asList(Task.Status.values()));
+
         return "tasks";
     }
 

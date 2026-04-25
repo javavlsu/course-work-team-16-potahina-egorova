@@ -1,6 +1,8 @@
 package ru.vlsu.ispi.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.beans.Task;
 import ru.vlsu.ispi.beans.TaskList;
@@ -94,5 +96,15 @@ public class TaskService {
 
     public List<Task> findTasksByUser(User user) {
         return taskRepository.findByUser(user);
+    }
+
+    public Page<Task> findTasksByUserWithFilters(
+            User user,
+            Task.Category category,
+            Task.Status status,
+            String search,
+            Pageable pageable) {
+
+        return taskRepository.findByUserAndFilters(user, category, status, search, pageable);
     }
 }
