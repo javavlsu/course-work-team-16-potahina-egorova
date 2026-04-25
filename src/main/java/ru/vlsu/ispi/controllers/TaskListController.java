@@ -102,6 +102,39 @@ public class TaskListController {
         return "taskLists";
     }
 
+    @GetMapping("/tasksInTaskList")
+    public String showTasksInList(
+            @RequestParam("id") Integer listId,
+            Model model,
+            HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        TaskList taskList = jpaService.runInTransaction(entityManager -> {
+            TaskList list = entityManager.find(TaskList.class, listId);
+            if (list != null) {
+                // Принудительно загружаем задачи и пользователя
+                Hibernate.initialize(list.getTasks());
+                Hibernate.initialize(list.getUser());
+            }
+            return list;
+        });
+
+        // Проверяем, что список найден и принадлежит текущему пользователю
+        if (taskList == null || taskList.getUser().getId() != currentUser.getId()) {
+            // Если список не найден или не принадлежит пользователю, перенаправляем на страницу со списками
+            return "redirect:/taskLists";
+        }
+
+        // Добавляем данные в модель для отображения в шаблоне
+        model.addAttribute("taskList", taskList);
+
+        return "tasksInTaskList";
+    }
+
     @GetMapping({"/add", "/edit"})
     public String showTaskListForm(@RequestParam(value = "id", required = false) Integer id,
                                    Model model, HttpSession session) {

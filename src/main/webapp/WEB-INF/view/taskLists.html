@@ -1,6 +1,6 @@
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<html lang="ru">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <title>Списки задач</title>
@@ -152,142 +152,167 @@
       width: 100%;
       font-size: 0.9rem;
     }
+
     .filters { margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; }
     .filter-group { display: inline-block; margin-right: 15px; }
     .pagination { margin-top: 20px; text-align: center; }
     .page-link { margin: 0 5px; padding: 5px 10px; border: 1px solid #ddd; text-decoration: none; }
     .disabled { color: #6c757d; pointer-events: none; cursor: default; }
+
+    .tasks-list {
+      display: none;
+      background: #f8f9fa;
+      padding: 15px;
+      border-top: 1px solid #eee;
+      margin: 10px -10px -10px;
+    }
+
+    .tasks-list.expanded {
+      display: block;
+    }
+
+    .toggle-tasks {
+      cursor: pointer;
+      color: #00b3a8;
+      text-decoration: underline;
+      font-size: 0.9rem;
+      margin-left: 10px;
+    }
+
+    .task-item {
+      padding: 8px 0;
+      border-bottom: 1px dashed #ddd;
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
   </style>
 </head>
 <body>
+<div class="navbar">
+  <div class="logo">
+    <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+  </div>
+  <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
+  <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
+  <a th:href="@{/table}" href="deleteLater/table.html" class="nav-item nav-desktop">Рабочий стол</a>
+  <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
+</div>
 
-  <div class="navbar">
-    <div class="logo">
-      <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+<div class="content">
+  <!-- ФОРМА ФИЛЬТРАЦИИ -->
+  <form th:action="@{/taskLists}" method="get" class="filters">
+    <div class="filter-group">
+      <label>Поиск по названию:</label>
+      <input type="text" name="search" th:value="${search}" placeholder="Введите название списка..." />
     </div>
-    <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
-    <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
-    <a th:href="@{/table}" href="table.html" class="nav-item nav-desktop">Рабочий стол</a>
-    <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
+    <button type="submit">Применить</button>
+    <a th:href="@{/taskLists}" class="button">Сбросить</a>
+  </form>
+
+  <div class="taskLists-table">
+    <div class="table-header">
+      <h2>Списки задач</h2>
+      <a th:href="@{/taskLists/add}">Создать новый список задач</a>
+    </div>
+    <table border="1" name="tasklists">
+      <thead>
+      <tr>
+        <th>№ списка задач</th>
+        <th>Название</th>
+        <th>Создатель</th>
+        <th>Количество задач</th>
+        <th>Действия</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:if="${#lists.isEmpty(taskLists)}">
+        <td colspan="5" style="text-align: center; padding: 20px;">
+          Списки задач не найдены
+        </td>
+      </tr>
+      <tr th:each="tl, tlStat : ${taskLists}">
+        <td th:text="${tlStat.count}"></td>
+        <td th:text="${tl.title}"></td>
+        <td th:text="${tl.user != null ? tl.user.name : 'Не указан'}"></td>
+        <td th:text="${#lists.size(tl.tasks)}"></td>
+        <td>
+          <a th:href="@{/taskLists/tasksInTaskList(id=${tl.id})}"
+             class="action-link action-view">
+            (посмотреть задачи)
+          </a>
+          <a th:href="@{'/taskLists/edit?id='+${tl.id}}">Редактировать</a>
+          <a th:href="@{'/taskLists/delete?id='+${tl.id}}"
+             onclick="return confirm('Удалить список задач?');">Удалить</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="content">
-    <!-- ФОРМА ФИЛЬТРАЦИИ -->
-    <form th:action="@{/taskLists}" method="get" class="filters">
-      <div class="filter-group">
-        <label>Поиск по названию:</label>
-        <input type="text" name="search" th:value="${search}" placeholder="Введите название списка..." />
-      </div>
-      <button type="submit">Применить</button>
-      <a th:href="@{/taskLists}" class="button">Сбросить</a>
-    </form>
-
-    <div class="taskLists-table">
-      <div class="table-header">
-        <h2>Списки задач</h2>
-        <a th:href="@{/taskLists/add}">Создать новый список задач</a>
-      </div>
-      <table border="1" name="tasklists">
-        <thead>
-        <tr>
-          <th>№ списка задач</th>
-          <th>Название</th>
-          <th>Создатель</th>
-          <th>Действия</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:if="${#lists.isEmpty(taskLists)}">
-          <td colspan="4" style="text-align: center; padding: 20px;">
-            Списков задач не найдено
-          </td>
-        </tr>
-        <tr th:each="tl, tlStat : ${taskLists}">
-          <td th:text="${tlStat.count}"></td>
-          <td th:text="${tl.title}"></td>
-          <td th:text="${tl.user != null ? tl.user.name : 'Не указан'}"></td>
-          <td>
-            <a th:href="@{'/taskLists/edit?id='+${tl.id}}">Редактировать</a>
-            <a th:href="@{'/taskLists/delete?id='+${tl.id}}"
-               onclick="return confirm('Удалить список задач?');">Удалить</a>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+  <!-- БЛОК ПАГИНАЦИИ -->
+  <div class="pagination">
+    <!-- Информация о текущей странице -->
+    <div class="page-info" th:with="start=${currentPage * pageSize + 1},
+                   end=${T(java.lang.Math).min((currentPage + 1) * pageSize, totalElements)}">
+      <span th:text="|${start}-${end} из ${totalElements}|"></span>
     </div>
 
-    <!-- БЛОК ПАГИНАЦИИ -->
-    <div class="pagination">
-      <!-- Информация о текущей странице -->
-      <div class="page-info" th:with="start=${currentPage * pageSize + 1},
-                                   end=${T(java.lang.Math).min((currentPage + 1) * pageSize, totalElements)}">
-        <span th:text="|${start}-${end} из ${totalElements}|"></span>
-      </div>
-
-      <!-- Навигация по страницам -->
-      <ul class="pagination-list">
-        <!-- Кнопка «Назад» -->
-        <li th:classappend="${currentPage == 0} ? 'disabled'">
-          <a class="page-link"
-             th:if="${currentPage > 0}"
-             th:href="@{/taskLists(page=${currentPage - 1}, size=${pageSize}, search=${search})}">
-            &laquo; Назад
-          </a>
-          <span class="page-link disabled" th:if="${currentPage == 0}">
+    <!-- Навигация по страницам -->
+    <ul class="pagination-list">
+      <!-- Кнопка «Назад» -->
+      <li th:classappend="${currentPage == 0} ? 'disabled'">
+        <a class="page-link"
+           th:if="${currentPage > 0}"
+           th:href="@{/taskLists(page=${currentPage - 1}, size=${pageSize}, search=${search})">
+          &laquo; Назад
+        </a>
+        <span class="page-link disabled" th:if="${currentPage == 0}">
             &laquo; Назад
           </span>
-        </li>
+      </li>
 
-        <!-- Номера страниц -->
-        <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-            th:classappend="${pageNum == currentPage} ? 'active'">
-          <a class="page-link"
-             th:if="${pageNum!= currentPage}"
-             th:href="@{/taskLists(page=${pageNum}, size=${pageSize}, search=${search})"
-             th:text="${pageNum + 1}"></a>
-          <span class="page-link active" th:if="${pageNum == currentPage}"
-                th:text="${pageNum + 1}"></span>
-        </li>
-      </ul>
-
-      <!-- Кнопка «Вперёд» -->
-      <li th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+      <!-- Номера страниц -->
+      <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+          th:classappend="${pageNum == currentPage} ? 'active'">
         <a class="page-link"
-           th:if="${currentPage < totalPages - 1}"
-           th:href="@{/taskLists(page=${currentPage + 1}, size=${pageSize}, search=${search})}">
-          Вперёд &raquo;
-        </a>
-        <span class="page-link disabled" th:if="${currentPage >= totalPages - 1}">
+           th:if="${pageNum != currentPage}"
+           th:href="@{/taskLists(page=${pageNum}, size=${pageSize}, search=${search})"
+           th:text="${pageNum + 1}"></a>
+        <span class="page-link active" th:if="${pageNum == currentPage}"
+              th:text="${pageNum + 1}"></span>
+      </li>
+    </ul>
+
+    <!-- Кнопка «Вперёд» -->
+    <li th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+      <a class="page-link"
+         th:if="${currentPage < totalPages - 1}"
+         th:href="@{/taskLists(page=${currentPage + 1}, size=${pageSize}, search=${search})">
+        Вперёд &raquo;
+      </a>
+      <span class="page-link disabled" th:if="${currentPage >= totalPages - 1}">
           Вперёд &raquo;
         </span>
-      </li>
-      </ul>
+    </li>
+    </ul>
 
-      <!-- Выбор количества элементов на странице -->
-      <div class="page-size-selector">
-        <label>Списков на странице:</label>
-        <select onchange="changePageSize(this.value)">
-          <option th:each="sizeOption : ${ {5, 10, 20, 50} }"
-                  th:value="${sizeOption}"
-                  th:text="${sizeOption}"
-                  th:selected="${sizeOption == pageSize}"></option>
-        </select>
-      </div>
+    <!-- Выбор количества элементов на странице -->
+    <div class="page-size-selector">
+      <label>Списков на странице:</label>
+      <select onchange="changePageSize(this.value)">
+        <option th:each="sizeOption : ${ {5, 10, 20, 50} }"
+                th:value="${sizeOption}"
+                th:text="${sizeOption}"
+                th:selected="${sizeOption == pageSize}"></option>
+      </select>
     </div>
   </div>
+</div>
 
   <div class="footer">
     © Все-приложения, 2025
   </div>
-
-  <!-- JavaScript для изменения размера страницы -->
-  <script>
-    function changePageSize(newSize) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('size', newSize);
-      url.searchParams.set('page', '0'); // сбрасываем на первую страницу
-      window.location.href = url.toString();
-    }
-  </script>
 </body>
 </html>
