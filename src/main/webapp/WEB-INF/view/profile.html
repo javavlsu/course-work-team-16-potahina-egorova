@@ -142,6 +142,14 @@
             align-items: center;
         }
 
+        .userAchievements-table {
+          background-color: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+          overflow: hidden;
+          margin: 20px 0;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -217,9 +225,39 @@
         <p>Email: <span th:text="${session.user.email}"></span></p>
         <p>Телефон: <span th:text="${session.user.phoneNumber}"></span></p>
         <p>Баллы: <span th:text="${session.user.totalPoints}"></span></p>
-        <a href="/tm_project2/logout">Выйти</a>
-        <div class="user-name" th:text="${user.name}"></div>
         <a th:href="@{/settings}" class="button add-edit">Редактировать профиль</a>
+        <a href="/tm_project2/logout">Выйти</a>
+
+        <div class="achievements-table">
+            <div class="table-header">
+                <h2>Мои достижения</h2>
+            </div>
+
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название достижения</th>
+                    <th>Задача</th>
+                    <th>Дата получения</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Проверяем, есть ли достижения -->
+                <tr th:if="${#lists.isEmpty(userAchievements)}">
+                    <td colspan="4" style="text-align: center; padding: 20px;">
+                        У вас пока нет достижений
+                    </td>
+                </tr>
+                <tr th:each="ua : ${userAchievements}">
+                    <td th:text="${ua.id}"></td>
+                    <td th:text="${ua.achievement != null ? ua.achievement.title : 'Не указано'}"></td>
+                    <td th:text="${ua.task != null ? ua.task.title : 'Не указана'}"></td>
+                    <td th:text="${#temporals.format(ua.achievedDate, 'dd.MM.yyyy HH:mm')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="footer">

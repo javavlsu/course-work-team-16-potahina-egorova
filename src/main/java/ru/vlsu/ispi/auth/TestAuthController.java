@@ -7,12 +7,12 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class TestAuthController {
 
-    @GetMapping("/profile")
-    public String testAuth(HttpSession session) {
-        if (session.getAttribute("user") != null) {
-            return "profile";
-        } else {
-            return "redirect:/login";
-        }
-    }
+//    @GetMapping("/profile")
+//    public String testAuth(HttpSession session) {
+//        if (session.getAttribute("user") != null) {
+//            return "profile";
+//        } else {
+//            return "redirect:/login";
+//        }
+//    }
 }
