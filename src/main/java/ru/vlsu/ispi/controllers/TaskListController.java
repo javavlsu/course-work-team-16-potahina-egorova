@@ -1,6 +1,10 @@
 package ru.vlsu.ispi.controllers;
 
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,13 +29,17 @@ public class TaskListController {
     }
 
 //    @GetMapping
-//    public String allTaskLists(Model model, HttpSession session) {
-//        if (session.getAttribute("user") == null) {
+//    public String showUserTaskLists(Model model, HttpSession session) {
+//        User currentUser = (User) session.getAttribute("user");
+//        if (currentUser == null) {
 //            return "redirect:/login";
 //        }
 //
 //        List<TaskList> taskLists = jpaService.runInTransaction(entityManager -> {
-//            return entityManager.createQuery("SELECT tl FROM TaskList tl", TaskList.class).getResultList();
+//            TypedQuery<TaskList> query = entityManager.createQuery(
+//                    ("SELECT tl FROM TaskList tl WHERE tl.user = :user"), TaskList.class);
+//            query.setParameter("user", currentUser);
+//            return query.getResultList();
 //        });
 //
 //        model.addAttribute("taskLists", taskLists);
@@ -39,20 +47,58 @@ public class TaskListController {
 //    }
 
     @GetMapping
-    public String showUserTaskLists(Model model, HttpSession session) {
+    public String showUserTaskLists(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "search", required = false) String search,
+            Model model, HttpSession session) {
+
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
             return "redirect:/login";
         }
 
-        List<TaskList> taskLists = jpaService.runInTransaction(entityManager -> {
-            TypedQuery<TaskList> query = entityManager.createQuery(
-                    ("SELECT tl FROM TaskList tl WHERE tl.user = :user"), TaskList.class);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TaskList> taskListPage = jpaService.runInTransaction(entityManager -> {
+            String queryString = "SELECT tl FROM TaskList tl WHERE tl.user = :user";
+            if (search != null && !search.trim().isEmpty()) {
+                queryString += " AND LOWER(tl.title) LIKE LOWER(CONCAT('%', :search, '%'))";
+            }
+            queryString += " ORDER BY tl.id DESC";
+
+            TypedQuery<TaskList> query = entityManager.createQuery(queryString, TaskList.class);
             query.setParameter("user", currentUser);
-            return query.getResultList();
+            if (search != null && !search.trim().isEmpty()) {
+                query.setParameter("search", search);
+            }
+
+            // Подсчёт общего количества элементов
+            String countQueryString = "SELECT COUNT(tl) FROM TaskList tl WHERE tl.user = :user";
+            if (search != null && !search.trim().isEmpty()) {
+                countQueryString += " AND LOWER(tl.title) LIKE LOWER(CONCAT('%', :search, '%'))";
+            }
+            TypedQuery<Long> countQuery = entityManager.createQuery(countQueryString, Long.class);
+            countQuery.setParameter("user", currentUser);
+            if (search != null && !search.trim().isEmpty()) {
+                countQuery.setParameter("search", search);
+            }
+
+            long total = countQuery.getSingleResult();
+            int start = page * size;
+            query.setFirstResult(start);
+            query.setMaxResults(size);
+
+            List<TaskList> content = query.getResultList();
+            return new PageImpl<>(content, pageable, total);
         });
 
-        model.addAttribute("taskLists", taskLists);
+        model.addAttribute("taskLists", taskListPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", taskListPage.getTotalPages());
+        model.addAttribute("totalElements", taskListPage.getTotalElements());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("search", search);
+
         return "taskLists";
     }
 
