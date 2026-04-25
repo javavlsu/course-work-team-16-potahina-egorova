@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title th:text="${task.title}"></title>
+  <style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
+    body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+    }
+
+    .navbar {
+    display: flex;
+    align-items: center;
+    background-color: #00b3a8;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-right: 30px;
+    }
+
+    .nav-item {
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    }
+
+    .nav-main { background-color: #4CAF50; }
+    .nav-achievements { background-color: #2196F3; }
+    .nav-desktop { background-color: #FF9800; }
+    .nav-profile { background-color: #9C27B0; }
+
+    .nav-item:hover {
+    opacity: 0.9;
+    background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .content {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    }
+
+    .tasks-table {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin: 20px 0;
+    }
+
+    .table-header {
+    background-color: #e8f4f3;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    }
+
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    }
+
+    thead {
+    background-color: #00b3a8;
+    color: white;
+    }
+
+    th {
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 600;
+    }
+
+    tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+    }
+
+    tbody tr:hover {
+    background-color: #f5f9f9;
+    }
+
+    td {
+    padding: 12px 10px;
+    }
+
+    .status-pending { color: #ff9800; font-weight: 500; }
+    .status-completed { color: #4CAF50; font-weight: 500; }
+    .status-overdue { color: #f44336; font-weight: 500; }
+
+    .action-link {
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    }
+
+    .action-start { background-color: #8bc34a; color: white; }
+    .action-edit { background-color: #2196f3; color: white; }
+    .action-delete { background-color: #f44336; color: white; }
+
+    .action-link:hover {
+    opacity: 0.9;
+    }
+
+    .footer {
+    background-color: #00b3a8;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 0.9rem;
+    }
+    .task-details { max-width: 800px; margin: 20px auto; padding: 20px; }
+    .detail-item { margin-bottom: 15px; }
+    .label { font-weight: bold; color: #555; }
+    .value { margin-left: 10px; color: #333; }
+        .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .btn-execute {
+      background-color: #8bc34a;
+      color: white;
+    }
+
+    .btn-edit {
+      background-color: #2196f3;
+      color: white;
+    }
+
+    .btn-delete {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .btn-back {
+      background-color: #95a5a6;
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">
+      <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+    </div>
+    <a th:href="@{/dashboard}" class="nav-item nav-main">Главная</a>
+    <a th:href="@{/achievements}" class="nav-item nav-achievements">Достижения</a>
+    <a th:href="@{/table}" class="nav-item nav-desktop">Рабочий стол</a>
+    <a th:href="@{/profile}" class="nav-item nav-profile">Профиль</a>
+  </div>
+
+  <div class="content">
+    <div class="task-details">
+      <h1 th:text="${task.title}"></h1>
+
+      <div class="detail-item">
+        <span class="label">ID задачи:</span>
+        <span class="value" th:text="${task.id}"></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Создатель:</span>
+        <span class="value" th:text="${task.user != null ? task.user.name : 'Не указан'}"></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Список задач:</span>
+        <span class="value" th:text="${task.taskList != null ? task.taskList.title : 'Не указан'}"></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Категория:</span>
+        <span class="value" th:text="${task.category != null ? task.category : 'Не указана'}"></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Статус:</span>
+        <span class="value"
+              th:class="${task.status == 'Completed'} ? 'status-completed' : ''"
+              th:text="${task.status != null ? task.status : 'Не указан'}"></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Подробности:</span>
+        <p class="value" th:text="${task.details}"></p>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Дедлайн:</span>
+        <span class="value" th:text="${#temporals.format(task.deadlineAt, 'dd.MM.yyyy HH:mm')}"></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="label">Количество XP:</span>
+        <span class="value" th:text="${task.points}"></span>
+      </div>
+
+      <div class="actions">
+        <a th:if="${task.status != null and task.status != 'Completed'}"
+           th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${task.id})"
+           class="btn btn-execute">Выполнить/Продолжить</a>
+        <span th:if="${task.status == 'Completed'}" class="status-completed">Задача завершена</span>
+        <a th:href="@{/tasks/edit(id=${task.id})" class="btn btn-edit">Редактировать</a>
+        <a th:href="@{/tasks/delete(id=${task.id})"
+           onclick="return confirm('Удалить задачу?');"
+           class="btn btn-delete">Удалить</a>
+        <a th:href="@{/tasks}" class="btn btn-back">Вернуться к списку задач</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    © Все-приложения, 2025
+  </div>
+</body>
+</html>

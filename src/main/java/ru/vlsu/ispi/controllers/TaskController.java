@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/tasks")
@@ -75,6 +76,38 @@ public class TaskController {
         model.addAttribute("statuses", Arrays.asList(Task.Status.values()));
 
         return "tasks";
+    }
+
+
+    @GetMapping("/details")
+    public String showTaskDetails(
+            @RequestParam("id") int taskId,
+            Model model,
+            HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        Optional<Task> taskOptional = taskService.getTaskById(taskId);
+        if (!taskOptional.isPresent()) {
+            model.addAttribute("error", "Задача не найдена");
+            return "error"; // или перенаправление на страницу с ошибкой
+        }
+
+        Task task = taskOptional.get();
+
+        // Принудительно загружаем связанные объекты
+        if (task.getUser() != null) {
+            Hibernate.initialize(task.getUser());
+        }
+        if (task.getTaskList() != null) {
+            Hibernate.initialize(task.getTaskList());
+        }
+
+        model.addAttribute("task", task);
+        return "taskDetails";
     }
 
     @GetMapping({"/add", "/edit"})

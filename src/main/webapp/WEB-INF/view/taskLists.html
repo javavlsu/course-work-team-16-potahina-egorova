@@ -190,7 +190,7 @@
       <table border="1" name="tasklists">
         <thead>
         <tr>
-          <th>ID</th>
+          <th>№ списка задач</th>
           <th>Название</th>
           <th>Создатель</th>
           <th>Действия</th>
@@ -202,8 +202,8 @@
             Списков задач не найдено
           </td>
         </tr>
-        <tr th:each="tl : ${taskLists}">
-          <td th:text="${tl.id}"></td>
+        <tr th:each="tl, tlStat : ${taskLists}">
+          <td th:text="${tlStat.count}"></td>
           <td th:text="${tl.title}"></td>
           <td th:text="${tl.user != null ? tl.user.name : 'Не указан'}"></td>
           <td>
