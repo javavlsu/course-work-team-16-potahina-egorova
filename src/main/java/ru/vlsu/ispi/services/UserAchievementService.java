@@ -48,4 +48,8 @@ public class UserAchievementService {
     public List<UserAchievement> getAllUserAchievements() {
         return userAchievementRepository.findAll();
     }
+
+    public List<UserAchievement> getUserAchievementsByUser(User user) {
+        return userAchievementRepository.findByUser(user);
+    }
 }

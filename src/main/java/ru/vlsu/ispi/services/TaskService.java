@@ -91,4 +91,8 @@ public class TaskService {
 
         return taskRepository.save(task);
     }
+
+    public List<Task> findTasksByUser(User user) {
+        return taskRepository.findByUser(user);
+    }
 }

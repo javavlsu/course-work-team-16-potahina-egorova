@@ -30,16 +30,26 @@ public class TaskController {
         this.taskListService = taskListService;
     }
 
+//    @GetMapping
+//    public String allTasks(HttpSession session, Model model) {
+//        if (session.getAttribute("user") == null) {
+//            return "redirect:/login";
+//        }
+//        List<Task> tasks = taskService.getAllTasks();
+//        model.addAttribute("tasks", tasks);
+//        return "tasks";
+//    }
+
     @GetMapping
-    public String allTasks(HttpSession session, Model model) {
-        if (session.getAttribute("user") == null) {
+    public String showUserTasks(Model model, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
             return "redirect:/login";
         }
-        List<Task> tasks = taskService.getAllTasks();
-        model.addAttribute("tasks", tasks);
+        List<Task> userTasks = taskService.findTasksByUser(currentUser);
+        model.addAttribute("tasks", userTasks);
         return "tasks";
     }
-
 
     @GetMapping({"/add", "/edit"})
     public String showTaskForm(@RequestParam(value = "id", required = false) Integer id, Model model,

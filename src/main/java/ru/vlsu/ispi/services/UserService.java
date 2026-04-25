@@ -42,7 +42,6 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -100,5 +99,11 @@ public class UserService {
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         return email != null && email.matches(emailRegex);
+    }
+
+
+    public User findById(Integer id) {
+        return userRepository.findById(id.intValue())
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

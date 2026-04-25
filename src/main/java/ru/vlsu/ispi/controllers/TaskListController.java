@@ -5,10 +5,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.vlsu.ispi.beans.Task;
 import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.services.JPAService;
 
+import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
@@ -22,14 +24,32 @@ public class TaskListController {
         this.jpaService = jpaService;
     }
 
+//    @GetMapping
+//    public String allTaskLists(Model model, HttpSession session) {
+//        if (session.getAttribute("user") == null) {
+//            return "redirect:/login";
+//        }
+//
+//        List<TaskList> taskLists = jpaService.runInTransaction(entityManager -> {
+//            return entityManager.createQuery("SELECT tl FROM TaskList tl", TaskList.class).getResultList();
+//        });
+//
+//        model.addAttribute("taskLists", taskLists);
+//        return "taskLists";
+//    }
+
     @GetMapping
-    public String allTaskLists(Model model, HttpSession session) {
-        if (session.getAttribute("user") == null) {
+    public String showUserTaskLists(Model model, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
             return "redirect:/login";
         }
 
         List<TaskList> taskLists = jpaService.runInTransaction(entityManager -> {
-            return entityManager.createQuery("SELECT tl FROM TaskList tl", TaskList.class).getResultList();
+            TypedQuery<TaskList> query = entityManager.createQuery(
+                    ("SELECT tl FROM TaskList tl WHERE tl.user = :user"), TaskList.class);
+            query.setParameter("user", currentUser);
+            return query.getResultList();
         });
 
         model.addAttribute("taskLists", taskLists);
