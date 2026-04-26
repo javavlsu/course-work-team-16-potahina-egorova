@@ -122,6 +122,20 @@
     .status-completed { color: #4CAF50; font-weight: 500; }
     .status-overdue { color: #f44336; font-weight: 500; }
 
+    .actions-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .actions-container a, span {
+      display: block;
+      text-align: center;
+      padding: 4px 8px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
     .actions {
       display: flex;
       gap: 8px;
@@ -140,20 +154,6 @@
 
     .action-link:hover {
       opacity: 0.9;
-    }
-
-    .actions-container {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .actions-container a, span {
-      display: block;
-      text-align: center;
-      padding: 4px 8px;
-      text-decoration: none;
-      font-size: 14px;
     }
 
     .footer {
@@ -247,15 +247,17 @@
           <td th:text="${t.points}"></td>
           <td>
             <div class="actions-container">
-              <a th:href="@{/tasks/details(id=${t.id})}" class="btn-view">Подробнее</a>
+              <a th:href="@{/tasks/details(id=${t.id})}"
+                 class="btn-view"
+                 style="color: #FF8C00; text-decoration: underline;">Подробнее</a>
               <a th:if="${t.status != null and t.status.name() != 'Completed'}"
-                 th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${t.id})}">Выполнить/Продолжить</a>
+                 th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${t.id})}" class="action-link action-start">Выполнить/Продолжить</a>
               <span th:if="${t.status != null and t.status.name() == 'Completed'}" style="color: green; font-weight: bold;">Завершено</span>
               <!-- Кнопка редактирования отображается только если задача НЕ завершена -->
               <a th:if="${t.status == null or t.status.name() != 'Completed'}"
-                 th:href="@{'/tasks/edit?id=' + ${t.id}}">Редактировать</a>
+                 th:href="@{'/tasks/edit?id=' + ${t.id}}" class="action-link action-edit">Редактировать</a>
               <a th:href="@{'/tasks/delete?id=' + ${t.id}}"
-                 onclick="return confirm('Удалить задачу?');">Удалить</a>
+                 onclick="return confirm('Удалить задачу?');" class="action-link action-delete">Удалить</a>
             </div>
           </td>
         </tr>

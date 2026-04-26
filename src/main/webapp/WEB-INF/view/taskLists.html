@@ -239,12 +239,15 @@
         <td th:text="${#lists.size(tl.tasks)}"></td>
         <td>
           <a th:href="@{/taskLists/tasksInTaskList(id=${tl.id})}"
-             class="action-link action-view">
+             class="action-link action-view"
+             style="color: #FF8C00; text-decoration: underline;">
             (посмотреть задачи)
           </a>
-          <a th:href="@{'/taskLists/edit?id='+${tl.id}}">Редактировать</a>
+          <a th:href="@{'/taskLists/edit?id='+${tl.id}}"
+             class="action-link action-edit">Редактировать</a>
           <a th:href="@{'/taskLists/delete?id='+${tl.id}}"
-             onclick="return confirm('Удалить список задач?');">Удалить</a>
+             onclick="return confirm('Удалить список задач?');"
+             class="action-link action-delete">Удалить</a>
         </td>
       </tr>
       </tbody>
