@@ -177,6 +177,13 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 15px;
+      color: #00b3a8;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -232,15 +239,7 @@
       </div>
 
       <div class="actions">
-        <a th:if="${task.status != null and task.status != 'Completed'}"
-           th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${task.id})"
-           class="btn btn-execute">Выполнить/Продолжить</a>
-        <span th:if="${task.status == 'Completed'}" class="status-completed">Задача завершена</span>
-        <a th:href="@{/tasks/edit(id=${task.id})" class="btn btn-edit">Редактировать</a>
-        <a th:href="@{/tasks/delete(id=${task.id})"
-           onclick="return confirm('Удалить задачу?');"
-           class="btn btn-delete">Удалить</a>
-        <a th:href="@{/tasks}" class="btn btn-back">Вернуться к списку задач</a>
+        <a th:href="@{/tasks}" class="back-link">← Назад к задачам</a>
       </div>
     </div>
   </div>
