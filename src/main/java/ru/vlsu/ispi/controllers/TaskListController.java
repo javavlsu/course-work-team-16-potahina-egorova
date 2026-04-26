@@ -14,6 +14,7 @@ import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.services.JPAService;
 
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -108,30 +109,32 @@ public class TaskListController {
             Model model,
             HttpSession session) {
 
+
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
             return "redirect:/login";
         }
 
         TaskList taskList = jpaService.runInTransaction(entityManager -> {
-            TaskList list = entityManager.find(TaskList.class, listId);
-            if (list != null) {
-                // Принудительно загружаем задачи и пользователя
-                Hibernate.initialize(list.getTasks());
-                Hibernate.initialize(list.getUser());
+            String jpql = "SELECT DISTINCT tl FROM TaskList tl "
+                    + "LEFT JOIN FETCH tl.tasks t "
+                    + "WHERE tl.id = :listId AND tl.user.id = :userId";
+            TypedQuery<TaskList> query = entityManager.createQuery(jpql, TaskList.class);
+            query.setParameter("listId", listId);
+            query.setParameter("userId", currentUser.getId());
+            try {
+                return query.getSingleResult();
+            } catch (NoResultException e) {
+                return null;
             }
-            return list;
         });
 
-        // Проверяем, что список найден и принадлежит текущему пользователю
-        if (taskList == null || taskList.getUser().getId() != currentUser.getId()) {
-            // Если список не найден или не принадлежит пользователю, перенаправляем на страницу со списками
-            return "redirect:/taskLists";
+        if (taskList == null) {
+            model.addAttribute("error", "Список задач не найден или не принадлежит вам");
+            return "error";
         }
 
-        // Добавляем данные в модель для отображения в шаблоне
         model.addAttribute("taskList", taskList);
-
         return "tasksInTaskList";
     }
 

@@ -195,11 +195,6 @@
       <h1 th:text="${task.title}"></h1>
 
       <div class="detail-item">
-        <span class="label">ID задачи:</span>
-        <span class="value" th:text="${task.id}"></span>
-      </div>
-
-      <div class="detail-item">
         <span class="label">Создатель:</span>
         <span class="value" th:text="${task.user != null ? task.user.name : 'Не указан'}"></span>
       </div>
