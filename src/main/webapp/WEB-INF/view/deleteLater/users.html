@@ -3,7 +3,7 @@
 <html lang="ru">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Достижения пользователей</title>
+    <title>Список пользователей</title>
     <style>
         * {
           margin: 0;
@@ -57,7 +57,7 @@
           margin: 0 auto;
         }
 
-        .userAchievements-table {
+        .users-table {
           background-color: white;
           border-radius: 8px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -155,54 +155,53 @@
     </style>
 </head>
 <body>
-
-<div class="navbar">
-    <div class="logo">
-        <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
-    </div>
-    <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
-    <a th:href="@{/userAchievements}" href="userAchievements.html" class="nav-item nav-achievements">Достижения</a>
-    <a th:href="@{/table}" href="deleteLater/table.html" class="nav-item nav-desktop">Рабочий стол</a>
-    <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
-</div>
-
-<div class="content">
-    <div class="userAchievements-table">
-        <div class="table-header">
-        <h2>Достижения пользователей</h2>
-        <a th:href="@{/userAchievements/add}">Добавить достижение пользователя</a>
+    <div class="navbar">
+        <div class="logo">
+            <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
         </div>
-
-        <table border="1" name="userAchievements">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Название достижения</th>
-                <th>Пользователь</th>
-                <th>Задача</th>
-                <th>Дата получения достижения</th>
-                <th>Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="ua : ${userAchievements}">
-                <td th:text="${ua.id}"></td>
-                <td th:text="${ua.achievement != null ? ua.achievement.title : 'Не указано'}"></td>
-                <td th:text="${ua.user != null ? ua.user.name : 'Не указан'}"></td>
-                <td th:text="${ua.task != null ? ua.task.title : 'Не указана'}"></td>
-                <td th:text="${#temporals.format(ua.achievedDate, 'dd.MM.yyyy HH:mm')}"></td>
-                <td>
-                    <a th:href="@{'/userAchievements/edit?id=' + ${ua.id}}">Редактировать</a>
-                    <a th:href="@{'/userAchievements/delete?id=' + ${ua.id}}"
-                       onclick="return confirm('Удалить задачу?');">Удалить</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
+        <a th:href="@{/userAchievements}" href="userAchievements.html" class="nav-item nav-achievements">Достижения</a>
+        <a th:href="@{/table}" href="table.html" class="nav-item nav-desktop">Рабочий стол</a>
+        <a th:href="@{/profile}" href="../profile.html" class="nav-item nav-profile">Профиль</a>
     </div>
-</div>
-<div class="footer">
-    © Все-приложения, 2025
-</div>
+
+    <div class="content">
+        <div class="users-table">
+            <div class="table-header">
+            <h2>Пользователи</h2>
+            <a th:href="@{/users/add}">Добавить пользователя</a>
+            </div>
+
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Никнейм</th>
+                    <th>Электронная почта</th>
+                    <th>Количество набранных баллов</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${users}">
+                    <td th:text="${u.id}"></td>
+                    <td th:text="${u.name}"></td>
+                    <td th:text="${u.email}"></td>
+                    <td th:text="${u.totalPoints}"></td>
+                    <td>
+                        <a th:href="@{'/users/user_table?id='+${u.id}}">К задачам</a>
+                        <a th:href="@{'/users/edit?id='+${u.id}}">Редактировать</a>
+                        <a th:href="@{'/users/delete?id='+${u.id}}"
+                           onclick="return confirm('Удалить пользователя?');">Удалить</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        © Все-приложения, 2025
+    </div>
 </body>
 </html>
