@@ -117,6 +117,8 @@ public class TaskController {
             return "redirect:/login";
         }
 
+        User currentUser = (User) session.getAttribute("user");
+
         Task task;
         if (id != null && id > 0) {
             task = taskService.getTaskById(id)
@@ -131,13 +133,16 @@ public class TaskController {
             }
         } else {
             task = new Task();
+            // Устанавливаем текущего пользователя как создателя по умолчанию
+            task.setUser(currentUser);
         }
         model.addAttribute("task", task);
 
-        List<User> users = userService.getAllUsers();
-        model.addAttribute("users", users);
+        // Передаём текущего пользователя для отображения в форме
+        model.addAttribute("currentUser", currentUser);
 
-        List<TaskList> taskLists = taskListService.getAllTaskLists();
+        // Получаем только списки задач текущего пользователя
+        List<TaskList> taskLists = taskListService.findByUser(currentUser);
         model.addAttribute("taskLists", taskLists);
 
         model.addAttribute("categories", Arrays.asList(Task.Category.values()));

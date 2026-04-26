@@ -142,6 +142,20 @@
       opacity: 0.9;
     }
 
+    .actions-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .actions-container a, span {
+      display: block;
+      text-align: center;
+      padding: 4px 8px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
     .footer {
       background-color: #00b3a8;
       color: white;
@@ -232,13 +246,15 @@
           <td th:text="${#temporals.format(t.deadlineAt, 'dd.MM.yyyy HH:mm')}"></td>
           <td th:text="${t.points}"></td>
           <td>
-            <a th:href="@{/tasks/details(id=${t.id})}" class="btn-view">Подробнее</a>
-            <a th:if="${t.status != null and t.status.name() != 'Completed'}"
-               th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${t.id})}">Выполнить/Продолжить</a>
-            <span th:if="${t.status != null and t.status.name() == 'Completed'}" style="color: green; font-weight: bold;">Завершено</span>
-            <a th:href="@{'/tasks/edit?id=' + ${t.id}}">Редактировать</a>
-            <a th:href="@{'/tasks/delete?id=' + ${t.id}}"
-               onclick="return confirm('Удалить задачу?');">Удалить</a>
+            <div class="actions-container">
+              <a th:href="@{/tasks/details(id=${t.id})}" class="btn-view">Подробнее</a>
+              <a th:if="${t.status != null and t.status.name() != 'Completed'}"
+                 th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${t.id})}">Выполнить/Продолжить</a>
+              <span th:if="${t.status != null and t.status.name() == 'Completed'}" style="color: green; font-weight: bold;">Завершено</span>
+              <a th:href="@{'/tasks/edit?id=' + ${t.id}}">Редактировать</a>
+              <a th:href="@{'/tasks/delete?id=' + ${t.id}}"
+                 onclick="return confirm('Удалить задачу?');">Удалить</a>
+            </div>
           </td>
         </tr>
         </tbody>

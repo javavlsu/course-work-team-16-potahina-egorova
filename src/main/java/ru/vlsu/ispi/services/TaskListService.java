@@ -41,8 +41,11 @@ public class TaskListService {
         taskListRepository.deleteById(id);
     }
 
-
     public List<TaskList> getAllTaskLists() {
         return taskListRepository.findAll();
+    }
+
+    public List<TaskList> findByUser(User user) {
+        return taskListRepository.findByUser(user);
     }
 }
