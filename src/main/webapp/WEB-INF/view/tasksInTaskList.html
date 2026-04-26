@@ -41,8 +41,8 @@
     }
 
     .nav-main { background-color: #4CAF50; }
-    .nav-achievements { background-color: #2196F3; }
-    .nav-desktop { background-color: #FF9800; }
+    .nav-tasks { background-color: #2196F3; }
+    .nav-task-lists { background-color: #FF9800; }
     .nav-profile { background-color: #9C27B0; }
 
     .nav-item:hover {
@@ -150,9 +150,9 @@
   <div class="logo">
     <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
   </div>
-  <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
-  <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
-  <a th:href="@{/table}" href="deleteLater/table.html" class="nav-item nav-desktop">Рабочий стол</a>
+  <a th:href="@{/main}" href="main.html" class="nav-item nav-main">Главная</a>
+  <a th:href="@{/tasks}" href="tasks.html" class="nav-item nav-tasks">Задачи</a>
+  <a th:href="@{/taskLists}" href="taskLists.html" class="nav-item nav-task-lists">Списки задач</a>
   <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
 </div>
 

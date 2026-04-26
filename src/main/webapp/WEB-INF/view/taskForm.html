@@ -11,8 +11,8 @@
     .nav-item { color: #000; padding: 10px; margin-left: 10px; text-decoration: none; }
     .nav-profile { }
     .nav-main { background-color: #a8d8a8; }
-    .nav-achievements { background-color: #00a8b3; }
-    .nav-desktop { background-color: #ff7f50; }
+    .nav-tasks { background-color: #00a8b3; }
+    .nav-task-lists { background-color: #ff7f50; }
     .nav-item:hover { opacity: 0.8; }
     .content { padding: 20px; }
     .task-form { background-color: #ffe4e1; padding: 20px; max-width: 600px; margin: 0 auto; }
@@ -27,9 +27,9 @@
     <div class="logo">
       <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
     </div>
-    <a th:href="@{/dashboard}" href="dashboard.html" class="nav-item nav-main">Главная</a>
-    <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
-    <a th:href="@{/table}" href="deleteLater/table.html" class="nav-item nav-desktop">Рабочий стол</a>
+    <a th:href="@{/main}" href="main.html" class="nav-item nav-main">Главная</a>
+    <a th:href="@{/tasks}" href="tasks.html" class="nav-item nav-tasks">Задачи</a>
+    <a th:href="@{/taskLists}" href="taskLists.html" class="nav-item nav-task-lists">Списки задач</a>
     <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
   </div>
 
