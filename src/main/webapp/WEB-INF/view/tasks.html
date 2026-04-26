@@ -251,7 +251,9 @@
               <a th:if="${t.status != null and t.status.name() != 'Completed'}"
                  th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${t.id})}">Выполнить/Продолжить</a>
               <span th:if="${t.status != null and t.status.name() == 'Completed'}" style="color: green; font-weight: bold;">Завершено</span>
-              <a th:href="@{'/tasks/edit?id=' + ${t.id}}">Редактировать</a>
+              <!-- Кнопка редактирования отображается только если задача НЕ завершена -->
+              <a th:if="${t.status == null or t.status.name() != 'Completed'}"
+                 th:href="@{'/tasks/edit?id=' + ${t.id}}">Редактировать</a>
               <a th:href="@{'/tasks/delete?id=' + ${t.id}}"
                  onclick="return confirm('Удалить задачу?');">Удалить</a>
             </div>
