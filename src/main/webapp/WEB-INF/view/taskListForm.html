@@ -6,20 +6,70 @@
   <title>Создать / редактировать список задач</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
-    .navbar { display: flex; background-color: #00b3a8; padding: 10px; }
     .logo { background-color: #00b3a8; color: white; padding: 10px; font-weight: bold; }
-    .nav-item { color: #000; padding: 10px; margin-left: 10px; text-decoration: none; }
-    .nav-profile { }
-    .nav-main { background-color: #a8d8a8; }
-    .nav-tasks { background-color: #00a8b3; }
-    .nav-task-lists { background-color: #ff7f50; }
-    .nav-item:hover { opacity: 0.8; }
     .content { padding: 20px; }
-    .task-list-form { background-color: #ffe4e1; padding: 20px; max-width: 600px; margin: 0 auto; }
+    .task-list-form {
+      background-color: #ffe4e1;
+      padding: 30px;
+      max-width: 600px;
+      margin: 0 auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
     label { display: block; margin-bottom: 5px; }
     input, select { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; }
-    .save-button { background-color: #ff4500; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; }
-    .footer { background-color: #a8d8a8; text-align: center; padding: 10px; position: fixed; bottom: 0; width: 100%; }
+    .save-button {
+      background-color: #ff4500;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .save-button:hover {
+      background-color: #e53e00;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      background-color: #00b3a8;
+      padding: 15px 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-item {
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .nav-main { background-color: #4CAF50; }
+    .nav-tasks { background-color: #2196F3; }
+    .nav-task-lists { background-color: #FF9800; }
+    .nav-profile { background-color: #9C27B0; }
+
+    .nav-item:hover {
+      opacity: 0.9;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .footer {
+      background-color: #00b3a8;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -50,7 +100,7 @@
         </select>
         <br/>
 
-        <input type="submit" value="Сохранить" />
+        <button type="submit" class="save-button">Сохранить</button>
       </form>
   </div>
 
