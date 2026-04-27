@@ -17,6 +17,14 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public boolean isEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean isPhoneExists(String phoneNumber) {
+        return userRepository.existsByPhoneNumber(phoneNumber);
+    }
+
     public User createUser(String name, String password,
                            String email, String phoneNumber, int totalPoints) {
         User user = new User(name, password, email, phoneNumber, totalPoints);
@@ -63,10 +71,14 @@ public class UserService {
     }
 
     public User registerUser(String name, String password, String email, String phoneNumber) {
-        // Проверка, существует ли пользователь с таким email
-        if (userRepository.findByEmailAndPassword(email, password).isPresent()) {
+        if (isEmailExists(email)) {
             throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
+
+        if (isPhoneExists(phoneNumber)) {
+            throw new IllegalArgumentException("Пользователь с таким номером телефона уже существует");
+        }
+
         User user = new User(name, password, email, phoneNumber, 0);
         return userRepository.save(user);
     }

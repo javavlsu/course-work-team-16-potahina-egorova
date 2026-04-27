@@ -210,6 +210,19 @@
         .register-link:hover {
           text-decoration: underline;
         }
+
+        .validation-hints {
+            background-color: #e8f4f3;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        .validation-hints h4 {
+            color: #00b3a8;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -225,18 +238,36 @@
         <div class="table-header">
             <h2>Регистрация</h2>
         </div>
-        <form th:action="@{/register}" method="post" class="register-form">
+        <form th:action="@{/register}" method="post" class="register-form" id="registerForm">
             <div>
-                <label>Имя: <input type="text" name="name" required></label>
+                <label>Имя:</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="validation-hints">
+                <h4>Требования к паролю:</h4>
+                <ul>
+                    <li>Минимум 5 цифр</li>
+                    <li>Минимум 2 буквы</li>
+                    <li>Хотя бы 1 специальный символ (!@#$% и т. д.)</li>
+                </ul>
             </div>
             <div>
-                <label>Пароль: <input type="password" name="password" required></label>
+                <label>Пароль:</label>
+                <input type="password" name="password" required
+                       pattern="(?=.*\d{5,})(?=.*[a-zA-Z]{2,})(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]).*"
+                       title="Минимум 5 цифр, 2 буквы, 1 спецсимвол">
+                <div class="error-message" id="passwordError"></div>
             </div>
             <div>
-                <label>Email: <input type="email" name="email" required></label>
+                <label>Email:</label>
+                <input type="email" name="email" required>
+                <div class="error-message" id="emailError"></div>
             </div>
             <div>
-                <label>Телефон: <input type="text" name="phoneNumber" required></label>
+                <label>Телефон:</label>
+                <input type="tel" name="phoneNumber" required
+                       placeholder="+7 (XXX) XXX-XX-XX">
+                <div class="error-message" id="phoneError"></div>
             </div>
             <button type="submit">Зарегистрироваться</button>
         </form>
@@ -248,5 +279,68 @@
 <div class="footer">
     © Все-приложения, 2025
 </div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Валидация пароля
+        const password = document.querySelector('input[name="password"]').value;
+        const passwordError = document.getElementById('passwordError');
+        const passwordRegex = /(?=.*\d{5,})(?=.*[a-zA-Z]{2,})(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]).*/;
+        if (!passwordRegex.test(password)) {
+            passwordError.textContent = 'Пароль должен содержать минимум 5 цифр, 2 буквы и 1 спецсимвол';
+            isValid = false;
+        } else {
+            passwordError.textContent = '';
+        }
+
+        // Валидация телефона
+        const phone = document.querySelector('input[name="phoneNumber"]').value;
+        const phoneError = document.getElementById('phoneError');
+        const phoneRegex = /^\+7\s?\(\d{3}\)\s?\d{3}-\d{2}-\d{2}$|^\+7\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            phoneError.textContent = 'Введите российский номер в формате +7 (XXX) XXX-XX-XX';
+            isValid = false;
+        } else {
+            phoneError.textContent = '';
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.querySelector('input[name="email"]');
+        const phoneInput = document.querySelector('input[name="phoneNumber"]');
+
+        emailInput.addEventListener('blur', function() {
+            checkUniqueness('email', this.value, 'emailError');
+        });
+
+        phoneInput.addEventListener('blur', function() {
+            checkUniqueness('phone', this.value, 'phoneError');
+        });
+    });
+
+    async function checkUniqueness(type, value, errorElementId) {
+        if (!value) return;
+
+        try {
+            const response = await fetch(`/api/check-unique?type=${type}&value=${encodeURIComponent(value)}`);
+            const data = await response.json();
+
+            const errorElement = document.getElementById(errorElementId);
+            if (!data.unique) {
+                errorElement.textContent = data.message;
+            } else {
+                errorElement.textContent = '';
+            }
+        } catch (error) {
+            console.error('Ошибка проверки уникальности:', error);
+        }
+    }
+</script>
 </body>
 </html>
