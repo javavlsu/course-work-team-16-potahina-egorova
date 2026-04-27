@@ -225,7 +225,7 @@
         <p>Email: <span th:text="${session.user.email}"></span></p>
         <p>Телефон: <span th:text="${session.user.phoneNumber}"></span></p>
         <p>Баллы: <span th:text="${session.user.totalPoints}"></span></p>
-        <a th:href="@{/settings}" class="button add-edit">Редактировать профиль</a>
+        <a th:href="@{/settings}" href="settings.html">Редактировать профиль</a>
         <a href="/tm_project2/logout">Выйти</a>
 
         <div class="achievements-table">
@@ -258,10 +258,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
-
-    <div class="footer">
-        © Все-приложения, 2025
     </div>
 
     <div class="footer">

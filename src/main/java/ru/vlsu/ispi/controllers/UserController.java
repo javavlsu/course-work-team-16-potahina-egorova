@@ -122,26 +122,26 @@ public class UserController {
         return "redirect:/users";
     }
 
-    @GetMapping("/table")
-    public String showTable(@RequestParam("id") int id, Model model,
-                            HttpSession session) {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/login";
-        }
-
-        User user = userService.getUserById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        model.addAttribute("user", user);
-        return "table";
-    }
-
-    @GetMapping("/user_table")
-    public String toUsersTable(@RequestParam("id") int id,
-                               HttpSession session) {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/login";
-        }
-
-        return "redirect:/users/table?id=" + id;
-    }
+//    @GetMapping("/table")
+//    public String showTable(@RequestParam("id") int id, Model model,
+//                            HttpSession session) {
+//        if (session.getAttribute("user") == null) {
+//            return "redirect:/login";
+//        }
+//
+//        User user = userService.getUserById(id)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//        model.addAttribute("user", user);
+//        return "table";
+//    }
+//
+//    @GetMapping("/user_table")
+//    public String toUsersTable(@RequestParam("id") int id,
+//                               HttpSession session) {
+//        if (session.getAttribute("user") == null) {
+//            return "redirect:/login";
+//        }
+//
+//        return "redirect:/users/table?id=" + id;
+//    }
 }

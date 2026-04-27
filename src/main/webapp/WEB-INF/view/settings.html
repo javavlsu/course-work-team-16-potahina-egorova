@@ -6,74 +6,145 @@
     <title>Настройки профиля</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
-        .navbar { display: flex; background-color: #00b3a8; padding: 10px; }
         .logo { background-color: #00b3a8; color: white; padding: 10px; font-weight: bold; }
-        .nav-item { color: #000; padding: 10px; margin-left: 10px; text-decoration: none; }
-        .nav-profile { }
-        .nav-main { background-color: #a8d8a8; }
-        .nav-achievements { background-color: #00a8b3; }
-        .nav-desktop { background-color: #ff7f50; }
-        .nav-item:hover { opacity: 0.8; }
         .content { padding: 20px; }
-        .settings-form { background-color: #ffe4e1; padding: 20px; max-width: 600px; margin: 0 auto; }
-        label { display: block; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; }
-        .save-button { background-color: #ff4500; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; }
-        .footer { background-color: #a8d8a8; text-align: center; padding: 10px; position: fixed; bottom: 0; width: 100%; }
+        .settings-form {
+          background-color: #ffe4e1;
+          padding: 30px;
+          max-width: 600px;
+          margin: 0 auto;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: bold;
+          color: #333;
+        }
+
+        input, select, textarea {
+          width: 100%;
+          padding: 12px;
+          margin-bottom: 20px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          box-sizing: border-box;
+          font-size: 16px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+          outline: none;
+          border-color: #00b3a8;
+          box-shadow: 0 0 5px rgba(0, 179, 168, 0.2);
+        }
+
+        .error {
+          color: #ff4500;
+          font-size: 14px;
+          margin-top: -15px;
+          margin-bottom: 15px;
+          display: block;
+        }
+
+        .save-button {
+          background-color: #ff4500;
+          color: white;
+          border: none;
+          padding: 12px 20px;
+          cursor: pointer;
+          width: 100%;
+          border-radius: 4px;
+          font-size: 16px;
+          font-weight: bold;
+          transition: background-color 0.3s;
+        }
+
+        .save-button:hover {
+          background-color: #e53e00;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            background-color: #00b3a8;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-main { background-color: #4CAF50; }
+        .nav-tasks { background-color: #2196F3; }
+        .nav-task-lists { background-color: #FF9800; }
+        .nav-profile { background-color: #9C27B0; }
+
+        .nav-item:hover {
+            opacity: 0.9;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .footer {
+            background-color: #00b3a8;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
-
     <div class="navbar">
         <div class="logo">
             <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
         </div>
-        <a th:href="@{/dashboard}" href="../../../../../../../Users/ptaha/OneDrive/Рабочий%20стол/сайт/dashboard.html" class="nav-item nav-main">Главная</a>
-        <a th:href="@{/achievements}" href="achievements.html" class="nav-item nav-achievements">Достижения</a>
-        <a th:href="@{/table}" href="../../../../../../../Users/ptaha/OneDrive/Рабочий%20стол/сайт/table.html" class="nav-item nav-desktop">Рабочий стол</a>
+        <a th:href="@{/main}" href="main.html" class="nav-item nav-main">Главная</a>
+        <a th:href="@{/tasks}" href="tasks.html" class="nav-item nav-tasks">Задачи</a>
+        <a th:href="@{/taskLists}" href="taskLists.html" class="nav-item nav-task-lists">Списки задач</a>
         <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
     </div>
 
     <div class="content">
-        <div class="settings-form">
+        <form th:action="@{/users/edit}" th:object="${user}" method="POST" class="settings-form">
             <h2>Редактировать личные данные пользователя</h2>
 
-            <form th:action="@{/users/edit}" th:object="${user}" method="POST">
+            <input type="hidden" th:field="*{id}"/>
 
-                <input type="hidden" th:field="*{id}"/>
+            <label>Никнейм:</label>
+            <input type="text" th:field="*{name}" placeholder="Никнейм пользователя"/>
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></div>
 
-                Никнейм:<br/>
-                <input type="text" th:field="*{name}" placeholder="Никнейм пользователя"/><br/>
-                <span class="error" th:if="${#fields.hasErrors('name')}"
-                      th:errors="*{name}"></span>
+            <label>Электронная почта:</label>
+            <input type="email" th:field="*{email}" placeholder="Электронная почта"/>
+            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></div>
 
-                Электронная почта:<br/>
-                <input type="text" th:field="*{email}" placeholder="Электронная почта"/><br/>
-                <span class="error" th:if="${#fields.hasErrors('email')}"
-                      th:errors="*{email}"></span>
+            <label>Номер телефона:</label>
+            <input type="tel" th:field="*{phoneNumber}" placeholder="Номер телефона"/>
+            <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error"></div>
 
-                Номер телефона:<br/>
-                <input type="text" th:field="*{phoneNumber}" placeholder="Номер телефона"/><br/>
-                <span class="error" th:if="${#fields.hasErrors('phoneNumber')}"
-                      th:errors="*{phoneNumber}"></span>
+            <label>Пароль:</label>
+            <input type="password" th:field="*{password}" placeholder="Пароль"/>
+            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></div>
 
-                Пароль:<br/>
-                <input type="password" th:field="*{password}" placeholder="Пароль"/><br/>
-                <span class="error" th:if="${#fields.hasErrors('password')}"
-                      th:errors="*{password}"></span>
+            <input type="hidden" th:field="*{totalPoints}" th:value="${user.totalPoints ?: 0}"/>
 
-                <input type="hidden" th:field="*{totalPoints}" th:value="${user.totalPoints ?: 0}"/>
-
-                <br/><br/>
-                <button type="submit">Сохранить</button>
-            </form>
-        </div>
+            <button type="submit" class="save-button">Сохранить</button>
+        </form>
     </div>
 
     <!-- Footer -->
     <div class="footer">
         © Все-приложения, 2025
     </div>
-
 </body>
 </html>
