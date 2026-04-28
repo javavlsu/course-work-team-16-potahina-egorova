@@ -1,4 +1,4 @@
-package ru.vlsu.ispi.auth;
+package ru.vlsu.ispi.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
