@@ -20,6 +20,7 @@ import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/tasks")
@@ -44,6 +45,7 @@ public class TaskController {
 //        return "tasks";
 //    }
 
+
     @GetMapping
     public String showUserTasks(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -64,7 +66,22 @@ public class TaskController {
                 currentUser, category, status, search, pageable
         );
 
-        model.addAttribute("tasks", taskPage.getContent());
+        // Сортировка: незавершённые сначала (по дедлайну), завершённые в конце (по дедлайну)
+        List<Task> sortedTasks = taskPage.getContent().stream()
+                .sorted((t1, t2) -> {
+                    boolean t1Completed = Task.Status.Completed.equals(t1.getStatus());
+                    boolean t2Completed = Task.Status.Completed.equals(t2.getStatus());
+
+                    // Если обе задачи завершённые или обе незавершённые — сортируем по дедлайну
+                    if (t1Completed == t2Completed) {
+                        return t1.getDeadlineAt().compareTo(t2.getDeadlineAt());
+                    }
+                    // Завершённые задачи идут после незавершённых
+                    return Boolean.compare(t1Completed, t2Completed);
+                })
+                .collect(Collectors.toList());
+
+        model.addAttribute("tasks", sortedTasks);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", taskPage.getTotalPages());
         model.addAttribute("totalElements", taskPage.getTotalElements());
