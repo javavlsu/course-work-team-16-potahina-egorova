@@ -2,6 +2,7 @@ package ru.vlsu.ispi.beans;
 
 import javax.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -30,15 +31,19 @@ public class Notification {
 	private String text;
 	@Column(name = "is_read")
 	private boolean isRead;
+	@Column
+	private LocalDateTime createdAt;
 
 	public Notification(User user, Task task, UserAchievement userAchievement,
-						String title, String text, boolean isRead) {
+						String title, String text, boolean isRead,
+						LocalDateTime createdAt) {
 		this.user = user;
 		this.task = task;
 		this.userAchievement = userAchievement;
 		this.title = title;
 		this.text = text;
 		this.isRead = isRead;
+		this.createdAt = createdAt;
 	}
 
 	public Notification() {}
@@ -110,5 +115,13 @@ public class Notification {
 
 	public boolean getIsRead() {
 		return this.isRead;
-	} 
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 }

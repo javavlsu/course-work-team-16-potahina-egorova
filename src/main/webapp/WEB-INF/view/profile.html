@@ -251,11 +251,21 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="u : ${users}">
+                <tr th:each="u : ${profileUser.friends}">
                     <td th:text="${u.name}"></td>
                     <td th:text="${u.email}"></td>
-                    <a th:href="@{/tasks}" class="btn-view"
-                       style="color: #1E90FF; text-decoration: underline;">Перейти в профиль</a>
+                    <td>
+                        <a th:href="@{/users/profile/{id}(id=${u.id})}"
+                           class="btn-view"
+                           style="color: #1E90FF; text-decoration: underline;">
+                            Перейти в профиль
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(profileUser.friends)}">
+                    <td colspan="3" style="text-align: center; padding: 20px;">
+                        У пользователя пока нет друзей
+                    </td>
                 </tr>
                 </tbody>
             </table>

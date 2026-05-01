@@ -4,6 +4,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.vlsu.ispi.beans.FriendRequest;
+import ru.vlsu.ispi.beans.Notification;
 import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.beans.UserAchievement;
 import ru.vlsu.ispi.services.UserAchievementService;
@@ -143,26 +145,14 @@ public class UserController {
         return "redirect:/users";
     }
 
-//    @GetMapping("/table")
-//    public String showTable(@RequestParam("id") int id, Model model,
-//                            HttpSession session) {
-//        if (session.getAttribute("user") == null) {
-//            return "redirect:/login";
-//        }
-//
-//        User user = userService.getUserById(id)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//        model.addAttribute("user", user);
-//        return "table";
-//    }
-//
-//    @GetMapping("/user_table")
-//    public String toUsersTable(@RequestParam("id") int id,
-//                               HttpSession session) {
-//        if (session.getAttribute("user") == null) {
-//            return "redirect:/login";
-//        }
-//
-//        return "redirect:/users/table?id=" + id;
-//    }
+    @PostMapping("/send-friend-request/{receiverId}")
+    public String sendFriendRequest(@PathVariable int receiverId,
+                                    HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        userService.sendFriendRequest(currentUser.getId(), receiverId);
+        return "redirect:/users";
+    }
 }

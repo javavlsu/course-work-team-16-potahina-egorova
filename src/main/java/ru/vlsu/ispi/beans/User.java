@@ -24,6 +24,14 @@ public class User {
 	@Column
 	private int totalPoints = 0;
 
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+			name = "user_friends",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "friend_id")
+	)
+	private List<User> friends = new ArrayList<>();
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TaskList> taskLists = new ArrayList<>();
 
@@ -103,11 +111,15 @@ public class User {
 
 	public int getTotalPoints() {
 		return this.totalPoints;
-	}  
+	}
 
-//	public String toString() {
-//		return this.getId() + " " + this.name + " " + this.totalPoints;
-//	}
+	public List<User> getFriends() {
+		return friends;
+	}
+
+	public void setFriends(List<User> friends) {
+		this.friends = friends;
+	}
 
 	@Override
 	public String toString() {

@@ -76,4 +76,10 @@ public class TMService {
         this.visualMediaDAO = visualMediaDAO;
     }
     public VisualMediaDAO getVisualMediaDAO() { return visualMediaDAO; }
+
+    private FriendRequestDAO friendRequestDAO;
+    public void setFriendRequestDAO(FriendRequestDAO friendRequestDAO) {
+        this.friendRequestDAO = friendRequestDAO;
+    }
+    public FriendRequestDAO getFriendRequestDAO() { return friendRequestDAO; }
 }

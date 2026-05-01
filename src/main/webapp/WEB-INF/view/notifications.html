@@ -188,10 +188,41 @@
 </div>
 </div>
 
+
 <div class="content">
     <div class="tasks-table">
         <div class="table-header">
             <h2>Входящие уведомления</h2>
+        </div>
+
+        <!-- Запросы в друзья -->
+        <div th:if="${#lists.isEmpty(pendingRequests)}">
+            <p>Нет входящих запросов в друзья</p>
+        </div>
+        <table border="1" th:if="!${#lists.isEmpty(pendingRequests)}">
+            <thead>
+            <tr>
+                <th>От кого</th>
+                <th>Действие</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="request : ${pendingRequests}">
+                <td th:text="${request.sender.name}"></td>
+                <td>
+                    <form th:action="@{/notifications/accept-friend-request/{id}(id=${request.id})}" method="post" style="display:inline;">
+                        <button type="submit" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; margin-right: 5px;">Принять</button>
+                    </form>
+                    <button style="background: #f44336; color: white; border: none; padding: 5px 10px;">Отклонить</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Прочие уведомления -->
+        <div th:each="notification : ${notifications}">
+            <p th:text="${notification.text}"></p>
+            <small th:text="${#temporals.format(notification.createdAt, 'dd.MM.yyyy HH:mm')}"></small>
         </div>
     </div>
 </div>

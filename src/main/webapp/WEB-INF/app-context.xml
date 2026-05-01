@@ -95,6 +95,10 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
+    <bean id="friendRequestDAOImpl" class="ru.vlsu.ispi.daoimpl.FriendRequestDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <bean id="tMService" class="ru.vlsu.ispi.tmservice.TMService">
         <property name="userDAO" ref="userDAOImpl"/>
         <property name="userAchievementDAO" ref="userAchievementDAOImpl"/>
@@ -106,5 +110,6 @@
         <property name="timerModeDAO" ref="timerModeDAOImpl"/>
         <property name="musicMediaDAO" ref="musicMediaDAOImpl"/>
         <property name="visualMediaDAO" ref="visualMediaDAOImpl"/>
+        <property name="friendRequestDAO" ref="friendRequestDAOImpl"/>
     </bean>
 </beans>

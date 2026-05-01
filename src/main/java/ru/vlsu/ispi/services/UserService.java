@@ -2,19 +2,31 @@ package ru.vlsu.ispi.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.vlsu.ispi.beans.FriendRequest;
+import ru.vlsu.ispi.beans.Notification;
+import ru.vlsu.ispi.repositories.FriendRequestRepository;
+import ru.vlsu.ispi.repositories.NotificationRepository;
 import ru.vlsu.ispi.repositories.UserRepository;
 import ru.vlsu.ispi.beans.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
+    private final FriendRequestRepository friendRequestRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       NotificationRepository notificationRepository,
+                       FriendRequestRepository friendRequestRepository) {
         this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository;
+        this.friendRequestRepository = friendRequestRepository;
     }
 
     public boolean isEmailExists(String email) {
@@ -117,5 +129,67 @@ public class UserService {
     public User findById(Integer id) {
         return userRepository.findById(id.intValue())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public void sendFriendRequest(int senderId, int receiverId) {
+        User sender = getUserById(senderId)
+                .orElseThrow(() -> new RuntimeException("Отправитель с ID " + senderId + " не найден"));
+        User receiver = getUserById(receiverId)
+                .orElseThrow(() -> new RuntimeException("Получатель с ID " + receiverId + " не найден"));;
+
+        FriendRequest request = new FriendRequest();
+        request.setSender(sender);
+        request.setReceiver(receiver);
+        request.setStatus(FriendRequest.RequestStatus.PENDING);
+        request.setCreatedAt(LocalDateTime.now());
+        friendRequestRepository.save(request);
+
+        // Создаём уведомление
+        Notification notification = new Notification();
+        notification.setUser(receiver);
+        notification.setText("Пользователь " + sender.getName() + " хочет добавить вас в друзья");
+        notification.setIsRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+    }
+
+    public void acceptFriendRequest(int requestId, int currentUserId) {
+        FriendRequest request = friendRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Запрос не найден"));
+
+        if (request.getReceiver().getId() != currentUserId) {
+            throw new RuntimeException("Недостаточно прав");
+        }
+
+        request.setStatus(FriendRequest.RequestStatus.ACCEPTED);
+        friendRequestRepository.save(request);
+
+        // Добавляем в друзья обоих пользователей
+        User sender = request.getSender();
+        User receiver = request.getReceiver();
+        sender.getFriends().add(receiver);
+        receiver.getFriends().add(sender);
+
+        userRepository.save(sender);
+        userRepository.save(receiver);
+
+        // Уведомление об принятии
+        Notification notification = new Notification();
+        notification.setUser(sender);
+        notification.setText("Пользователь " + receiver.getName() + " принял ваш запрос в друзья");
+        notification.setIsRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+    }
+
+
+    public List<FriendRequest> getPendingRequests(int userId) {
+        User user = getUserById(userId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        return friendRequestRepository.findByReceiverAndStatus(user, FriendRequest.RequestStatus.PENDING);
+    }
+
+    public List<Notification> getUnreadNotifications(int userId) {
+        User user = getUserById(userId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        return notificationRepository.findByUserAndIsReadFalse(user);
     }
 }

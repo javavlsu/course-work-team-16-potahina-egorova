@@ -21,11 +21,17 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    public Notification createNotification(User user, Task task, UserAchievement userAchievement,
-                                           String title, String text, boolean isRead) {
-        Notification notification = new Notification(user, task, userAchievement,
-                title, text, isRead);
+    public Notification createNotification(User user, String text) {
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setText(text);
+        notification.setIsRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
         return notificationRepository.save(notification);
+    }
+
+    public List<Notification> getUnreadNotifications(User user) {
+        return notificationRepository.findByUserAndIsReadFalse(user);
     }
 
     public Optional<Notification> getNotificationById(int id) {
