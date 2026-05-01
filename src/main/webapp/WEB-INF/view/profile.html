@@ -207,6 +207,13 @@
             width: 100%;
             font-size: 0.9rem;
         }
+        .friends-table {
+          background-color: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+          overflow: hidden;
+          margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -229,6 +236,29 @@
         <p>Баллы: <span th:text="${session.user.totalPoints}"></span></p>
         <a th:href="@{/settings}" href="settings.html">Редактировать профиль</a>
         <a href="/tm_project2/logout">Выйти</a>
+
+        <div class="friends-table">
+            <div class="table-header">
+                <h2>Мои друзья</h2>
+            </div>
+            <a th:href="@{/users}">Найти друзей</a>
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>Никнейм</th>
+                    <th>Электронная почта</th>
+                    <th>Количество набранных баллов</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${users}">
+                    <td th:text="${u.name}"></td>
+                    <td th:text="${u.email}"></td>
+                    <td th:text="${u.totalPoints}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
         <div class="achievements-table">
             <div class="table-header">
