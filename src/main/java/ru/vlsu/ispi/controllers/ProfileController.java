@@ -3,10 +3,12 @@ package ru.vlsu.ispi.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.beans.UserAchievement;
 import ru.vlsu.ispi.services.UserAchievementService;
+import ru.vlsu.ispi.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -15,9 +17,12 @@ import java.util.List;
 @RequestMapping("/profile")
 public class ProfileController {
     private final UserAchievementService userAchievementService;
+    private final UserService userService;
 
-    public ProfileController(UserAchievementService userAchievementService) {
+    public ProfileController(UserAchievementService userAchievementService,
+                             UserService userService) {
         this.userAchievementService = userAchievementService;
+        this.userService = userService;
     }
 
     @GetMapping

@@ -6,6 +6,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.beans.UserAchievement;
+import ru.vlsu.ispi.services.UserAchievementService;
 import ru.vlsu.ispi.services.UserService;
 
 import javax.servlet.http.HttpSession;
@@ -15,11 +16,13 @@ import java.util.List;
 @Controller
 @RequestMapping("/users")
 public class UserController {
-
     private final UserService userService;
+    private final UserAchievementService userAchievementService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService,
+                          UserAchievementService userAchievementService) {
         this.userService = userService;
+        this.userAchievementService = userAchievementService;
     }
 
     @GetMapping
@@ -31,6 +34,24 @@ public class UserController {
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "users";
+    }
+
+    @GetMapping("/profile/{id}")
+    public String showUserProfile(@PathVariable("id") int userId,
+                                  Model model,
+                                  HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
+        User user = userService.getUserById(userId)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        List<UserAchievement> achievements = userAchievementService.getAchievementsByUserId(userId);
+
+        model.addAttribute("profileUser", user);
+        model.addAttribute("profileUserAchievements", achievements);
+        return "userProfile";
     }
 
     @GetMapping({"/add", "/edit"})

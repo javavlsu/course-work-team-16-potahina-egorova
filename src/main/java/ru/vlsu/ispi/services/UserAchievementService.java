@@ -52,4 +52,8 @@ public class UserAchievementService {
     public List<UserAchievement> getUserAchievementsByUser(User user) {
         return userAchievementRepository.findByUser(user);
     }
+
+    public List<UserAchievement> getAchievementsByUserId(int userId) {
+        return userAchievementRepository.findByUserId(userId);
+    }
 }

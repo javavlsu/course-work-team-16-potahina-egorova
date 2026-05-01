@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Профиль</title>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .navbar {
+        display: flex;
+        align-items: center;
+        background-color: #00b3a8;
+        padding: 15px 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+        color: white;
+        font-weight: bold;
+        font-size: 1.5rem;
+        margin-right: 30px;
+    }
+
+    .nav-item {
+        color: white;
+        padding: 10px 15px;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+
+    .nav-main { background-color: #4CAF50; }
+    .nav-tasks { background-color: #2196F3; }
+    .nav-task-lists { background-color: #FF9800; }
+    .nav-profile { background-color: #9C27B0; }
+    .nav-notifications { background-color: #CCCCFF; }
+
+    .nav-item:hover {
+        opacity: 0.9;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .content {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .profile-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .user-icon {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 20px;
+        border: 4px solid #00b3a8;
+    }
+
+    .profile-info {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .profile-info p {
+        margin-bottom: 12px;
+        font-size: 1rem;
+    }
+
+    .profile-name {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #00b3a8;
+        margin-bottom: 10px;
+    }
+
+    .logout-link {
+        display: inline-block;
+        margin: 15px 0;
+        color: #f44336;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+
+    .logout-link:hover {
+        color: #d32f2f;
+        text-decoration: underline;
+    }
+
+    .edit-profile-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #00b3a8;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: background-color 0.3s, transform 0.2s;
+        cursor: pointer;
+    }
+
+    .edit-profile-btn:hover {
+        background-color: #009a90;
+        transform: translateY(-2px);
+    }
+
+    .tasks-table {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin: 20px 0;
+    }
+
+    .table-header {
+        background-color: #e8f4f3;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .userAchievements-table {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+    }
+
+    thead {
+        background-color: #00b3a8;
+        color: white;
+    }
+
+    th {
+        padding: 12px 10px;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.2s;
+    }
+
+    tbody tr:hover {
+        background-color: #f5f9f9;
+    }
+
+    td {
+        padding: 12px 10px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-link {
+        padding: 6px 12px;
+        text-decoration: none;
+        border-radius: 3px;
+        font-size: 0.85rem;
+    }
+
+    .action-link:hover {
+        opacity: 0.9;
+    }
+
+    .footer {
+        background-color: #00b3a8;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+    .friends-table {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">
+      <img th:src="@{/images/logo.png}" alt="Логотип" width="100" />
+    </div>
+    <a th:href="@{/main}" href="main.html" class="nav-item nav-main">Главная</a>
+    <a th:href="@{/tasks}" href="tasks.html" class="nav-item nav-tasks">Задачи</a>
+    <a th:href="@{/taskLists}" href="taskLists.html" class="nav-item nav-task-lists">Списки задач</a>
+    <a th:href="@{/notifications}" href="notifications.html" class="nav-item nav-notifications">Уведомления</a>
+    <a th:href="@{/profile}" href="profile.html" class="nav-item nav-profile">Профиль</a>
+  </div>
+
+  <div class="content">
+    <img th:src="@{/images/user.png}" alt="Иконка пользователя" class="user-icon" />
+    <h2>Профиль пользователя: <span th:text="${profileUser.name}"></span></h2>
+    <p>Email: <span th:text="${profileUser.email}"></span></p>
+    <p>Баллы: <span th:text="${profileUser.totalPoints}"></span></p>
+
+<!--    <div class="friends-table">-->
+<!--      <div class="table-header">-->
+<!--        <h2>Друзья пользователя</h2>-->
+<!--      </div>-->
+<!--      <table border="1">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--          <th>Никнейм</th>-->
+<!--          <th>Электронная почта</th>-->
+<!--          <th>Профиль</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="u : ${profileUser.friends}">-->
+<!--          <td th:text="${u.name}"></td>-->
+<!--          <td th:text="${u.email}"></td>-->
+<!--          <td>-->
+<!--            <a th:href="@{/users/profile/{id}(id=${u.id})}"-->
+<!--               class="btn-view"-->
+<!--               style="color: #1E90FF; text-decoration: underline;">-->
+<!--              Перейти в профиль-->
+<!--            </a>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr th:if="${#lists.isEmpty(profileUser.friends)}">-->
+<!--          <td colspan="3" style="text-align: center; padding: 20px;">-->
+<!--            У пользователя пока нет друзей-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--      </table>-->
+<!--    </div>-->
+
+
+<!--    <div class="achievements-table">-->
+<!--      <div class="table-header">-->
+<!--        <h2>Достижения пользователя</h2>-->
+<!--      </div>-->
+
+<!--      <table border="1">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--          <th>ID</th>-->
+<!--          <th>Название достижения</th>-->
+<!--          <th>Задача</th>-->
+<!--          <th>Дата получения</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        &lt;!&ndash; Сообщение, если достижений нет &ndash;&gt;-->
+<!--        <tr th:if="${#lists.isEmpty(profileUserAchievements)}">-->
+<!--          <td colspan="4" style="text-align: center; padding: 20px;">-->
+<!--            У пользователя пока нет достижений-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        &lt;!&ndash; Отображение достижений &ndash;&gt;-->
+<!--        <tr th:each="ua : ${profileUserAchievements}">-->
+<!--          <td th:text="${ua.id}"></td>-->
+<!--          <td th:text="${ua.achievement != null ? ua.achievement.title : 'Не указано'}"></td>-->
+<!--          <td th:text="${ua.task != null ? ua.task.title : 'Не указана'}"></td>-->
+<!--          <td th:text="${#temporals.format(ua.achievedDate, 'dd.MM.yyyy HH:mm')}"></td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--      </table>-->
+<!--    </div>-->
+  </div>
+
+  <div class="footer">
+    © Все-приложения, 2025
+  </div>
+</body>
+</html>
