@@ -10,7 +10,9 @@ import ru.vlsu.ispi.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/users")
@@ -23,7 +25,6 @@ public class UserController {
         this.userService = userService;
         this.userAchievementService = userAchievementService;
     }
-
 
     @GetMapping
     public String listUsers(
@@ -45,7 +46,15 @@ public class UserController {
 
         List<User> users = userService.searchUsers(criteria, currentUser.getId());
 
+        // Создаём карту для хранения статуса дружбы
+        Map<Integer, Boolean> friendsStatus = new HashMap<>();
+        for (User user : users) {
+            friendsStatus.put(user.getId(), userService.areFriends(currentUser.getId(), user.getId()));
+        }
+
         model.addAttribute("users", users);
+        model.addAttribute("friendsStatus", friendsStatus);
+        model.addAttribute("currentUserId", currentUser.getId());
         model.addAttribute("userId", userId);
         model.addAttribute("name", name);
         model.addAttribute("email", email);

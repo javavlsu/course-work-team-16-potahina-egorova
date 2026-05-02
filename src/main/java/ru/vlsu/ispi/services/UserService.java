@@ -155,6 +155,16 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    public boolean areFriends(int userId1, int userId2) {
+        User user1 = userRepository.findById(userId1)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        User user2 = userRepository.findById(userId2)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        return user1.getAllFriends().contains(user2);
+    }
+
     public void sendFriendRequest(int senderId, int receiverId) {
         User sender = getUserById(senderId)
                 .orElseThrow(() -> new RuntimeException("Отправитель с ID " + senderId + " не найден"));
