@@ -32,10 +32,13 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-        // Получаем достижения текущего пользователя
+        // Загружаем обе коллекции в рамках транзакции
+        List<User> allFriends = currentUser.getAllFriends();
+
         List<UserAchievement> userAchievements = userAchievementService.getUserAchievementsByUser(currentUser);
 
         model.addAttribute("user", currentUser);
+        model.addAttribute("friends", allFriends); // передаём объединённый список
         model.addAttribute("userAchievements", userAchievements);
         return "profile";
     }

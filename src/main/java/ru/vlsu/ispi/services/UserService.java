@@ -1,5 +1,6 @@
 package ru.vlsu.ispi.services;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -181,7 +182,6 @@ public class UserService {
         notification.setCreatedAt(LocalDateTime.now());
         notificationRepository.save(notification);
     }
-
 
     public List<FriendRequest> getPendingRequests(int userId) {
         User user = getUserById(userId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));

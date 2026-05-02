@@ -2,9 +2,7 @@ package ru.vlsu.ispi.beans;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "user")
@@ -31,6 +29,14 @@ public class User {
 			inverseJoinColumns = @JoinColumn(name = "friend_id")
 	)
 	private List<User> friends = new ArrayList<>();
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+			name = "user_friends",
+			joinColumns = @JoinColumn(name = "friend_id"),
+			inverseJoinColumns = @JoinColumn(name = "user_id")
+	)
+	private List<User> friendsOf = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TaskList> taskLists = new ArrayList<>();
@@ -63,6 +69,12 @@ public class User {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
+	}
+
+	public List<User> getAllFriends() {
+		Set<User> allFriends = new HashSet<>(friends);
+		allFriends.addAll(friendsOf);
+		return new ArrayList<>(allFriends);
 	}
 
 	public void setId(int id) {
