@@ -216,6 +216,28 @@ public class UserService {
         notificationRepository.save(notification);
     }
 
+    @Transactional
+    public void rejectFriendRequest(int requestId, int currentUserId) {
+        FriendRequest request = friendRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Запрос не найден"));
+
+        // Проверяем, что запрос предназначен текущему пользователю
+        if (request.getReceiver().getId() != currentUserId) {
+            throw new RuntimeException("Недостаточно прав для отклонения этого запроса");
+        }
+
+        // Удаляем запрос
+        friendRequestRepository.delete(request);
+
+        // Создаём уведомление для отправителя
+        Notification notification = new Notification();
+        notification.setUser(request.getSender());
+        notification.setText("Пользователь " +
+                request.getReceiver().getName() + " отклонил ваш запрос в друзья");
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+    }
+
     public List<FriendRequest> getPendingRequests(int userId) {
         User user = getUserById(userId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         return friendRequestRepository.findByReceiverAndStatus(user, FriendRequest.RequestStatus.PENDING);

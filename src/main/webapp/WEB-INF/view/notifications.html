@@ -213,7 +213,9 @@
                     <form th:action="@{/notifications/accept-friend-request/{id}(id=${request.id})}" method="post" style="display:inline;">
                         <button type="submit" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; margin-right: 5px;">Принять</button>
                     </form>
-                    <button style="background: #f44336; color: white; border: none; padding: 5px 10px;">Отклонить</button>
+                    <form th:action="@{/notifications/reject-friend-request/{id}(id=${request.id})}" method="post" style="display:inline;">
+                        <button type="submit" style="background: #f44336; color: white; border: none; padding: 5px 10px;">Отклонить</button>
+                    </form>
                 </td>
             </tr>
             </tbody>

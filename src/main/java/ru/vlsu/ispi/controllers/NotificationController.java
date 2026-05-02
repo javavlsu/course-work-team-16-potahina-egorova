@@ -24,17 +24,6 @@ public class NotificationController {
         this.userService = userService;
     }
 
-    @PostMapping("/accept-friend-request/{requestId}")
-    public String acceptFriendRequest(@PathVariable int requestId,
-                                      HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            return "redirect:/login";
-        }
-        userService.acceptFriendRequest(requestId, currentUser.getId());
-        return "redirect:/notifications";
-    }
-
     @GetMapping
     public String showNotifications(Model model, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
@@ -48,5 +37,27 @@ public class NotificationController {
         model.addAttribute("pendingRequests", pendingRequests);
         model.addAttribute("notifications", notifications);
         return "notifications";
+    }
+
+    @PostMapping("/accept-friend-request/{requestId}")
+    public String acceptFriendRequest(@PathVariable int requestId,
+                                      HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        userService.acceptFriendRequest(requestId, currentUser.getId());
+        return "redirect:/notifications";
+    }
+
+    @PostMapping("/reject-friend-request/{requestId}")
+    public String rejectFriendRequest(@PathVariable int requestId,
+                                      HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        userService.rejectFriendRequest(requestId, currentUser.getId());
+        return "redirect:/notifications";
     }
 }
