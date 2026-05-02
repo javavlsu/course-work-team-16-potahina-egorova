@@ -151,6 +151,9 @@
           width: 100%;
           font-size: 0.9rem;
         }
+
+        .filters { margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .filter-group { display: inline-block; margin-right: 15px; }
     </style>
 </head>
 <body>
@@ -166,6 +169,24 @@
     </div>
 
     <div class="content">
+        <!-- ФОРМА ФИЛЬТРАЦИИ -->
+        <form th:action="@{/users}" method="get" class="filters">
+            <div class="filter-group">
+                <label>ID пользователя:</label>
+                <input type="number" name="userId" th:value="${userId}" placeholder="Введите ID" />
+            </div>
+            <div class="filter-group">
+                <label>Никнейм:</label>
+                <input type="text" name="name" th:value="${name}" placeholder="Введите никнейм" />
+            </div>
+            <div class="filter-group">
+                <label>Email:</label>
+                <input type="email" name="email" th:value="${email}" placeholder="Введите email" />
+            </div>
+            <button type="submit">Найти</button>
+            <a th:href="@{/users}" class="button">Сбросить</a>
+        </form>
+
         <div class="users-table">
             <div class="table-header">
             <h2>Пользователи</h2>

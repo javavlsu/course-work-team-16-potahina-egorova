@@ -4,10 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.vlsu.ispi.beans.FriendRequest;
-import ru.vlsu.ispi.beans.Notification;
-import ru.vlsu.ispi.beans.User;
-import ru.vlsu.ispi.beans.UserAchievement;
+import ru.vlsu.ispi.beans.*;
 import ru.vlsu.ispi.services.UserAchievementService;
 import ru.vlsu.ispi.services.UserService;
 
@@ -28,13 +25,29 @@ public class UserController {
     }
 
     @GetMapping
-    public String listUsers(Model model, HttpSession session) {
+    public String listUsers(
+            Model model,
+            HttpSession session,
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email
+    ) {
         if (session.getAttribute("user") == null) {
             return "redirect:/login";
         }
 
-        List<User> users = userService.getAllUsers();
+        UserSearchCriteria criteria = new UserSearchCriteria();
+        criteria.setUserId(userId);
+        criteria.setName(name);
+        criteria.setEmail(email);
+
+        List<User> users = userService.searchUsers(criteria);
+
         model.addAttribute("users", users);
+        model.addAttribute("userId", userId);
+        model.addAttribute("name", name);
+        model.addAttribute("email", email);
+
         return "users";
     }
 
@@ -109,7 +122,7 @@ public class UserController {
             );
         }
 
-        return "redirect:/users";
+        return "redirect:/profile";
     }
 
     @PostMapping("/add")

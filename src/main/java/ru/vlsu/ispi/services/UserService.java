@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.beans.FriendRequest;
 import ru.vlsu.ispi.beans.Notification;
+import ru.vlsu.ispi.beans.UserSearchCriteria;
 import ru.vlsu.ispi.repositories.FriendRequestRepository;
 import ru.vlsu.ispi.repositories.NotificationRepository;
 import ru.vlsu.ispi.repositories.UserRepository;
@@ -28,6 +29,14 @@ public class UserService {
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
         this.friendRequestRepository = friendRequestRepository;
+    }
+
+    public List<User> searchUsers(UserSearchCriteria criteria) {
+        return userRepository.findByCriteria(
+                criteria.getUserId(),
+                criteria.getName(),
+                criteria.getEmail()
+        );
     }
 
     public boolean isEmailExists(String email) {
