@@ -24,6 +24,7 @@ public class UserController {
         this.userAchievementService = userAchievementService;
     }
 
+
     @GetMapping
     public String listUsers(
             Model model,
@@ -32,7 +33,8 @@ public class UserController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email
     ) {
-        if (session.getAttribute("user") == null) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
             return "redirect:/login";
         }
 
@@ -41,7 +43,7 @@ public class UserController {
         criteria.setName(name);
         criteria.setEmail(email);
 
-        List<User> users = userService.searchUsers(criteria);
+        List<User> users = userService.searchUsers(criteria, currentUser.getId());
 
         model.addAttribute("users", users);
         model.addAttribute("userId", userId);

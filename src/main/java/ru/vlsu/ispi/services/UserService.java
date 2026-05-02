@@ -15,6 +15,7 @@ import ru.vlsu.ispi.beans.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -31,12 +32,25 @@ public class UserService {
         this.friendRequestRepository = friendRequestRepository;
     }
 
-    public List<User> searchUsers(UserSearchCriteria criteria) {
-        return userRepository.findByCriteria(
+//    public List<User> searchUsers(UserSearchCriteria criteria) {
+//        return userRepository.findByCriteria(
+//                criteria.getUserId(),
+//                criteria.getName(),
+//                criteria.getEmail()
+//        );
+//    }
+
+    public List<User> searchUsers(UserSearchCriteria criteria, Integer currentUserId) {
+        List<User> users = userRepository.findByCriteria(
                 criteria.getUserId(),
                 criteria.getName(),
                 criteria.getEmail()
         );
+
+        // Фильтруем: исключаем текущего пользователя
+        return users.stream()
+                .filter(user -> user.getId() != currentUserId)
+                .collect(Collectors.toList());
     }
 
     public boolean isEmailExists(String email) {
