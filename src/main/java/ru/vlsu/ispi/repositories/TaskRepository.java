@@ -34,6 +34,14 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     List<Task> findByAssignedUser(User assignedUser);
 
-
     Page<Task> findByAssignedUserOrderByDeadlineAtAsc(User assignedUser, Pageable pageable);
+
+    Page<Task> findByUser(User user, Pageable pageable);
+
+    @Query("SELECT t FROM Task t WHERE t.assignedUser = :assignedUser AND t.user != :assignedUser")
+    Page<Task> findByAssignedUserAndUserNot(
+            @Param("assignedUser") User assignedUser,
+            @Param("assignedUser") User user,
+            Pageable pageable
+    );
 }

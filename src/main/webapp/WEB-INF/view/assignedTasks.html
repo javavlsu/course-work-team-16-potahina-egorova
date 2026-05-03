@@ -182,93 +182,94 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:if="${#lists.isEmpty(assignedTasks)}">
-                <td colspan="4" style="text-align: center; padding: 20px;">
-                    Задач не найдено
-                </td>
-            </tr>
-            <tr th:each="task, taskStat : ${assignedTasks}">
-                <td th:text="${task.title}"></td>
-                <td th:text="${#temporals.format(task.deadlineAt, 'dd.MM.yyyy HH:mm')}"></td>
-                <td th:text="${task.status}"></td>
-                <td>
-                    <div class="actions-container">
-                        <a th:href="@{/tasks/details(id=${task.id})}"
-                           class="btn-view"
-                           style="color: #FF8C00; text-decoration: underline;">Подробнее</a>
-                        <th:block th:if="${task.status != null and task.status.name() != 'Completed'}">
-                            <a th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${task.id})}"
-                               class="action-link action-start">Выполнить/Продолжить</a>
-                        </th:block>
-                        <span th:if="${task.status != null and task.status.name() == 'Completed'}"
-                              class="status-completed">Завершено</span>
-                    </div>
-                </td>
-            </tr>
+                <tr th:if="${#lists.isEmpty(assignedTasks)}">
+                    <td colspan="4" style="text-align: center; padding: 20px;">
+                        Задач не найдено
+                    </td>
+                </tr>
+
+                <tr th:each="task, taskStat : ${assignedTasks}">
+                    <td th:text="${task.title}"></td>
+                    <td th:text="${#temporals.format(task.deadlineAt, 'dd.MM.yyyy HH:mm')}"></td>
+                    <td th:text="${task.status}"></td>
+                    <td>
+                        <div class="actions-container">
+                            <a th:href="@{/tasks/details(id=${task.id})}"
+                               class="btn-view"
+                               style="color: #FF8C00; text-decoration: underline;">Подробнее</a>
+                            <th:block th:if="${task.status != null and task.status.name() != 'Completed'}">
+                                <a th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${task.id})}"
+                                   class="action-link action-start">Выполнить/Продолжить</a>
+                            </th:block>
+                            <span th:if="${task.status != null and task.status.name() == 'Completed'}"
+                                  class="status-completed">Завершено</span>
+                        </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
 
     <!-- БЛОК ПАГИНАЦИИ -->
-    <div th:unless="${#lists.isEmpty(assignedTasks)}">
-        <div class="pagination">
-            <!-- Информация о текущей странице -->
-            <div class="page-info"
-                 th:with="start=${currentPage * pageSize + 1},
-                end=${(currentPage + 1) * pageSize &lt; totalElements ? (currentPage + 1) * pageSize : totalElements}">
-                <span th:text="|${start}-${end} из ${totalElements}|"></span>
-            </div>
+<!--    <div th:unless="${#lists.isEmpty(assignedTasks)}">-->
+<!--        <div class="pagination">-->
+<!--            &lt;!&ndash; Информация о текущей странице &ndash;&gt;-->
+<!--            <div class="page-info"-->
+<!--                 th:with="start=${currentPage * pageSize + 1},-->
+<!--                end=${(currentPage + 1) * pageSize &lt; totalElements ? (currentPage + 1) * pageSize : totalElements}">-->
+<!--                <span th:text="|${start}-${end} из ${totalElements}|"></span>-->
+<!--            </div>-->
 
-            <!-- Навигация по страницам -->
-            <ul class="pagination-list">
-                <!-- Кнопка «Назад» -->
-                <li th:classappend="${currentPage == 0} ? 'disabled'">
-                <li th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link"
-                       th:if="${currentPage > 0}"
-                       th:href="@{/tasks/assigned(page=${currentPage - 1}, size=${pageSize})">
-                        &laquo; Назад
-                    </a>
-                    <span class="page-link disabled" th:if="${currentPage == 0}">
-              &laquo; Назад
-            </span>
-                </li>
+<!--            &lt;!&ndash; Навигация по страницам &ndash;&gt;-->
+<!--            <ul class="pagination-list">-->
+<!--                &lt;!&ndash; Кнопка «Назад» &ndash;&gt;-->
+<!--                <li th:classappend="${currentPage == 0} ? 'disabled'">-->
+<!--                <li th:classappend="${currentPage == 0} ? 'disabled'">-->
+<!--                    <a class="page-link"-->
+<!--                       th:if="${currentPage > 0}"-->
+<!--                       th:href="@{/tasks/assigned(page=${currentPage - 1}, size=${pageSize})">-->
+<!--                        &laquo; Назад-->
+<!--                    </a>-->
+<!--                    <span class="page-link disabled" th:if="${currentPage == 0}">-->
+<!--              &laquo; Назад-->
+<!--            </span>-->
+<!--                </li>-->
 
-                <!-- Номера страниц -->
-                <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                    th:classappend="${pageNum == currentPage} ? 'active'">
-                    <a class="page-link"
-                       th:if="${pageNum != currentPage}"
-                       th:href="@{/tasks/assigned(page=${pageNum}, size=${pageSize})"
-                       th:text="${pageNum + 1}"></a>
-                    <span class="page-link active" th:if="${pageNum == currentPage}"
-                          th:text="${pageNum + 1}"></span>
-                </li>
+<!--                &lt;!&ndash; Номера страниц &ndash;&gt;-->
+<!--                <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"-->
+<!--                    th:classappend="${pageNum == currentPage} ? 'active'">-->
+<!--                    <a class="page-link"-->
+<!--                       th:if="${pageNum != currentPage}"-->
+<!--                       th:href="@{/tasks/assigned(page=${pageNum}, size=${pageSize})"-->
+<!--                       th:text="${pageNum + 1}"></a>-->
+<!--                    <span class="page-link active" th:if="${pageNum == currentPage}"-->
+<!--                          th:text="${pageNum + 1}"></span>-->
+<!--                </li>-->
 
-                <!-- Кнопка «Вперёд» -->
-                <li th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                    <a class="page-link"
-                       th:if="${currentPage < totalPages - 1}"
-                       th:href="@{/tasks/assigned(page=${currentPage + 1}, size=${pageSize})">
-                        Вперёд &raquo;
-                    </a>
-                    <span class="page-link disabled" th:if="${currentPage >= totalPages - 1}">
-              Вперёд &raquo;
-            </span>
-                </li>
-            </ul>
+<!--                &lt;!&ndash; Кнопка «Вперёд» &ndash;&gt;-->
+<!--                <li th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">-->
+<!--                    <a class="page-link"-->
+<!--                       th:if="${currentPage < totalPages - 1}"-->
+<!--                       th:href="@{/tasks/assigned(page=${currentPage + 1}, size=${pageSize})">-->
+<!--                        Вперёд &raquo;-->
+<!--                    </a>-->
+<!--                    <span class="page-link disabled" th:if="${currentPage >= totalPages - 1}">-->
+<!--              Вперёд &raquo;-->
+<!--            </span>-->
+<!--                </li>-->
+<!--            </ul>-->
 
-            <!-- Выбор количества элементов на странице -->
-            <div class="page-size-selector">
-                <label>Задач на странице:</label>
-                <select onchange="changePageSize(this.value)">
-                    <option th:each="sizeOption : ${ {5, 10, 20, 50} }"
-                            th:value="${sizeOption}"
-                            th:text="${sizeOption}"
-                            th:selected="${sizeOption == pageSize}"></option>
-                </select>
-            </div>
-        </div>
+<!--            &lt;!&ndash; Выбор количества элементов на странице &ndash;&gt;-->
+<!--            <div class="page-size-selector">-->
+<!--                <label>Задач на странице:</label>-->
+<!--                <select onchange="changePageSize(this.value)">-->
+<!--                    <option th:each="sizeOption : ${ {5, 10, 20, 50} }"-->
+<!--                            th:value="${sizeOption}"-->
+<!--                            th:text="${sizeOption}"-->
+<!--                            th:selected="${sizeOption == pageSize}"></option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 </div>
 

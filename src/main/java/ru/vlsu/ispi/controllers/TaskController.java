@@ -35,17 +35,6 @@ public class TaskController {
         this.taskListService = taskListService;
     }
 
-//    @GetMapping
-//    public String allTasks(HttpSession session, Model model) {
-//        if (session.getAttribute("user") == null) {
-//            return "redirect:/login";
-//        }
-//        List<Task> tasks = taskService.getAllTasks();
-//        model.addAttribute("tasks", tasks);
-//        return "tasks";
-//    }
-
-
     @GetMapping
     public String showUserTasks(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -62,21 +51,18 @@ public class TaskController {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Task> taskPage = taskService.findTasksByUserWithFilters(
-                currentUser, category, status, search, pageable
-        );
 
-        // Сортировка: незавершённые сначала (по дедлайну), завершённые в конце (по дедлайну)
+        // Получаем только задачи, созданные текущим пользователем
+        Page<Task> taskPage = taskService.findTasksCreatedByUser(currentUser, pageable);
+
         List<Task> sortedTasks = taskPage.getContent().stream()
                 .sorted((t1, t2) -> {
                     boolean t1Completed = Task.Status.Completed.equals(t1.getStatus());
                     boolean t2Completed = Task.Status.Completed.equals(t2.getStatus());
 
-                    // Если обе задачи завершённые или обе незавершённые — сортируем по дедлайну
                     if (t1Completed == t2Completed) {
                         return t1.getDeadlineAt().compareTo(t2.getDeadlineAt());
                     }
-                    // Завершённые задачи идут после незавершённых
                     return Boolean.compare(t1Completed, t2Completed);
                 })
                 .collect(Collectors.toList());
@@ -109,9 +95,9 @@ public class TaskController {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Task> assignedTasksPage = taskService.findTasksAssignedToUserWithPagination(
-                currentUser, pageable
-        );
+
+        // Получаем задачи, назначенные текущему пользователю, но созданные не им
+        Page<Task> assignedTasksPage = taskService.findTasksAssignedToUser(currentUser, pageable);
 
         model.addAttribute("assignedTasks", assignedTasksPage.getContent());
         model.addAttribute("currentPage", page);
@@ -120,7 +106,6 @@ public class TaskController {
 
         return "assignedTasks";
     }
-
 
     @PostMapping("/complete")
     public String completeTask(

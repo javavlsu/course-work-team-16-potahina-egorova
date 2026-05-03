@@ -139,4 +139,14 @@ public class TaskService {
 
         return taskRepository.findByUserAndFilters(user, category, status, search, pageable);
     }
+
+    // Задачи, созданные текущим пользователем (он — автор)
+    public Page<Task> findTasksCreatedByUser(User user, Pageable pageable) {
+        return taskRepository.findByUser(user, pageable);
+    }
+
+    // Задачи, назначенные текущему пользователю (он — исполнитель), кроме тех, что он сам себе назначил
+    public Page<Task> findTasksAssignedToUser(User user, Pageable pageable) {
+        return taskRepository.findByAssignedUserAndUserNot(user, user, pageable);
+    }
 }
