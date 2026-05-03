@@ -100,9 +100,15 @@
         <!-- Скрытое поле с ID текущего пользователя -->
         <input type="hidden" th:field="*{user.id}" th:value="${currentUser.id}"/>
 
+
         <label>Список задач:</label>
-        <select th:field="*{taskList.id}">
-          <option th:each="tl : ${taskLists}" th:value="${tl.id}" th:text="${tl.title}"></option>
+        <select th:field="*{taskList.id}" th:value="${task.taskList != null ? task.taskList.id : null}">
+          <option value="-1">-- Без списка задач --</option>
+          <option th:each="tl : ${taskLists}"
+                  th:value="${tl.id}"
+                  th:text="${tl.title}"
+                  th:selected="${task.taskList != null and task.taskList.id == tl.id}">
+          </option>
         </select>
         <br/>
 

@@ -264,6 +264,10 @@ public class TaskController {
             task.setAssignedUser(currentUser); // по умолчанию — текущий пользователь
         }
 
+        if (task.getTaskList() != null && task.getTaskList().getId() == -1) {
+            task.setTaskList(null);
+        }
+
         if (result.hasErrors()) {
             List<TaskList> taskLists = taskListService.findByUser(currentUser);
             model.addAttribute("taskLists", taskLists);
