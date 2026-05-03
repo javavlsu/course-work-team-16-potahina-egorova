@@ -31,4 +31,9 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     @Query("SELECT t FROM Task t JOIN FETCH t.assignedUser WHERE t.id = :id")
     Optional<Task> findByIdWithAssignedUser(@Param("id") Integer id);
+
+    List<Task> findByAssignedUser(User assignedUser);
+
+
+    Page<Task> findByAssignedUserOrderByDeadlineAtAsc(User assignedUser, Pageable pageable);
 }

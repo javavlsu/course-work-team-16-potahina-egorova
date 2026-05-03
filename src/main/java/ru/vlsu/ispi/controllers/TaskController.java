@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.vlsu.ispi.beans.Task;
 import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;
@@ -79,6 +80,7 @@ public class TaskController {
                 })
                 .collect(Collectors.toList());
 
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("tasks", sortedTasks);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", taskPage.getTotalPages());
@@ -93,6 +95,72 @@ public class TaskController {
         return "tasks";
     }
 
+    @GetMapping("/assigned")
+    public String showAssignedTasks(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model,
+            HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Task> assignedTasksPage = taskService.findTasksAssignedToUserWithPagination(
+                currentUser, pageable
+        );
+
+        model.addAttribute("assignedTasks", assignedTasksPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", assignedTasksPage.getTotalPages());
+        model.addAttribute("totalElements", assignedTasksPage.getTotalElements());
+
+        return "assignedTasks";
+    }
+
+
+    @PostMapping("/complete")
+    public String completeTask(
+            @RequestParam("taskId") int taskId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        Optional<Task> taskOptional = taskService.getTaskById(taskId);
+        if (!taskOptional.isPresent()) {
+            redirectAttributes.addFlashAttribute("error", "Задача не найдена");
+            return "redirect:/tasks/assigned";
+        }
+
+        Task task = taskOptional.get();
+
+        // Проверяем, что задача назначена текущему пользователю
+        if (task.getAssignedUser() == null || currentUser.getId() != task.getAssignedUser().getId()) {
+            redirectAttributes.addFlashAttribute("error", "Вы не можете выполнить эту задачу");
+            return "redirect:/tasks/assigned";
+        }
+
+        // Выполняем задачу
+        task.setStatus(Task.Status.Completed);
+        taskService.save(task);
+
+        // НАЧИСЛЕНИЕ БАЛЛОВ ИСПОЛНИТЕЛЮ
+        User assignedUser = task.getAssignedUser();
+        assignedUser.setTotalPoints(assignedUser.getTotalPoints() + task.getPoints());
+        userService.save(assignedUser);
+
+        // Обновляем данные пользователя в текущей сессии, чтобы новые баллы сразу отобразились в интерфейсе
+        session.setAttribute("user", assignedUser);
+
+        redirectAttributes.addFlashAttribute("success", "Задача выполнена успешно! Вам начислено " + task.getPoints() + " XP.");
+        return "redirect:/tasks/assigned";
+    }
 
     @GetMapping("/details")
     public String showTaskDetails(
@@ -177,9 +245,9 @@ public class TaskController {
 
 
     @PostMapping("/add_edit")
-    public String addEditTask(@Valid @ModelAttribute("task") Task task,
+    public String addEditTask(@Valid @ModelAttribute("task") Task task, BindingResult result,
                               @RequestParam(value = "assignedUserId", required = false) Integer assignedUserId,
-                              BindingResult result, Model model, HttpSession session) {
+                               Model model, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
 
         // Обработка назначенного пользователя
@@ -201,6 +269,16 @@ public class TaskController {
             model.addAttribute("taskLists", taskLists);
             model.addAttribute("categories", Arrays.asList(Task.Category.values()));
             model.addAttribute("statuses", Arrays.asList(Task.Status.values()));
+
+            Set<User> availableUsersSet = new HashSet<>();
+            availableUsersSet.add(currentUser);
+            if (currentUser.getFriends() != null) availableUsersSet.addAll(currentUser.getFriends());
+            if (currentUser.getAllFriends() != null) availableUsersSet.addAll(currentUser.getAllFriends());
+            List<User> availableUsers = new ArrayList<>(availableUsersSet);
+            availableUsers.sort(Comparator.comparing(User::getName));
+            model.addAttribute("availableUsers", availableUsers);
+            model.addAttribute("currentUser", currentUser);
+
             return "taskForm";
         }
 

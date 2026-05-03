@@ -220,6 +220,9 @@
     <div class="tasks-table">
       <div class="table-header">
         <h2>Задачи</h2>
+        <a th:href="@{/tasks/assigned}"
+           class="btn-view"
+           style="color: #FF8C00; text-decoration: underline;">Посмотреть назначенные мне задачи</a>
         <a th:href="@{/tasks/add}" class="add-task-btn">Добавить новую задачу</a>
       </div>
       <table border="1" name="tasks">
@@ -252,9 +255,18 @@
               <a th:href="@{/tasks/details(id=${t.id})}"
                  class="btn-view"
                  style="color: #FF8C00; text-decoration: underline;">Подробнее</a>
-              <a th:if="${t.status != null and t.status.name() != 'Completed'}"
-                 th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${t.id})}" class="action-link action-start">Выполнить/Продолжить</a>
-              <span th:if="${t.status != null and t.status.name() == 'Completed'}" style="color: green; font-weight: bold;">Завершено</span>
+              <!-- Кнопка редактирования отображается только если задача НЕ завершена -->
+              <th:block th:if="${t.status != null and t.status.name() != 'Completed'}">
+                <!-- Если задача назначена МНЕ (или исполнитель не указан) - показываем кнопку -->
+                <a th:if="${t.assignedUser == null or t.assignedUser.id == session.user.id}"
+                   th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${t.id})}"
+                   class="action-link action-start">Выполнить/Продолжить</a>
+
+                <!-- Если задача назначена ДРУГОМУ пользователю - показываем текст -->
+                <span th:if="${t.assignedUser != null and t.assignedUser.id != session.user.id}"
+                      style="color: gray; font-style: italic; font-size: 0.9em;">Эта задача назначена другому пользователю
+                </span>
+              </th:block>
               <!-- Кнопка редактирования отображается только если задача НЕ завершена -->
               <a th:if="${t.status == null or t.status.name() != 'Completed'}"
                  th:href="@{'/tasks/edit?id=' + ${t.id}}" class="action-link action-edit">Редактировать</a>

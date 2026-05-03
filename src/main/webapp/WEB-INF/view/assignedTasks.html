@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои назначенные задачи</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="navbar">
+    <a th:href="@{/main}" href="main.html" class="nav-item nav-main">Главная</a>
+    <a th:href="@{/tasks}" href="tasks.html" class="nav-item nav-tasks">Мои задачи</a>
+    <a th:href="@{/tasks/assigned}" href="assigned.html" class="nav-item">Назначенные мне</a>
+</div>
+
+<div class="content">
+    <h2>Задачи, назначенные мне</h2>
+
+    <table class="tasks-table">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Дедлайн</th>
+            <th>Статус</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="task : ${assignedTasks}">
+            <td th:text="${task.title}"></td>
+            <td th:text="${#temporals.format(task.deadlineAt, 'dd.MM.yyyy HH:mm')}"></td>
+            <td th:text="${task.status}"></td>
+            <td>
+                <a th:href="@{/tasks/details(id=${task.id})}" class="btn btn-info">Подробнее</a>
+                <a th:if="${task.status != null and task.status.name() != 'Completed'}"
+                   th:href="@{/tasks/start-execution?taskId={taskId}(taskId=${task.id})}" class="action-link action-start">Выполнить/Продолжить</a>
+                <span th:if="${task.status != null and task.status.name() == 'Completed'}" style="color: green; font-weight: bold;">Завершено</span>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Пагинация -->
+    <div class="pagination" th:if="${totalPages > 1}">
+        <a th:each="p : ${#numbers.sequence(0, totalPages - 1)}"
+           th:href="@{/tasks/assigned(page=${p},size=${pageSize})}"
+           th:text="${p + 1}"
+           th:class="${p == currentPage} ? 'active' : ''"></a>
+    </div>
+</div>
+</body>
+</html>

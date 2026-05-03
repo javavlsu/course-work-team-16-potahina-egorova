@@ -50,6 +50,14 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    public List<Task> findTasksAssignedToUser(User user) {
+        return taskRepository.findByAssignedUser(user);
+    }
+
+    public Page<Task> findTasksAssignedToUserWithPagination(User user, Pageable pageable) {
+        return taskRepository.findByAssignedUserOrderByDeadlineAtAsc(user, pageable);
+    }
+
     public boolean isValidAssignedUser(User creator, User assignedUser) {
         if (assignedUser == null) return true; // необязательно назначать
         if (creator.getId() == assignedUser.getId()) return true; // можно назначить себе
