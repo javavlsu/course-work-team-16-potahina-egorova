@@ -24,13 +24,37 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public Task createTask(String title, TaskList taskList,
-                           User user, User assignedUser, Category category, Status status,
-                           String details, LocalDateTime assignedAt, LocalDateTime deadlineAt,
+    public Task createTask(String title, TaskList taskList, User creator,
+                           User assignedUser, Task.Category category,
+                           Task.Status status, String details,
+                           LocalDateTime assignedAt, LocalDateTime deadlineAt,
                            int points) {
-        Task task = new Task(title, taskList, user, assignedUser, category, status,
-                details, assignedAt, deadlineAt, points);
+
+        if (!isValidAssignedUser(creator, assignedUser)) {
+            throw new IllegalArgumentException(
+                    ("Нельзя назначить задачу пользователю, который не является вами или вашим другом"));
+        }
+
+        Task task = new Task();
+        task.setTitle(title);
+        task.setTaskList(taskList);
+        task.setUser(creator);
+        task.setAssignedUser(assignedUser);
+        task.setCategory(category);
+        task.setStatus(status);
+        task.setDetails(details);
+        task.setAssignedAt(assignedAt);
+        task.setDeadlineAt(deadlineAt);
+        task.setPoints(points);
+
         return taskRepository.save(task);
+    }
+
+    public boolean isValidAssignedUser(User creator, User assignedUser) {
+        if (assignedUser == null) return true; // необязательно назначать
+        if (creator.getId() == assignedUser.getId()) return true; // можно назначить себе
+        return creator.getFriends().contains(assignedUser) ||
+                creator.getAllFriends().contains(assignedUser);
     }
 
     public Optional<Task> getTaskById(int id) {

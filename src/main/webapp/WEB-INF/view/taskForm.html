@@ -135,16 +135,32 @@
         <div th:if="${#fields.hasErrors('details')}" th:errors="*{details}" class="error"></div>
         <br/>
 
+
         <label>Дедлайн:</label>
         <input type="datetime-local"
                th:field="*{deadlineAt}"
                id="deadlineAt"
-               name="deadlineAt"
-               min="" />
+               name="deadlineAt"/>
         <div th:if="${#fields.hasErrors('deadlineAt')}"
              th:errors="*{deadlineAt}"
              class="error"
              style="display: none;"></div>
+        <br/>
+
+        <label>Назначить пользователю:</label>
+        <select th:field="*{assignedUser}">
+          <option value="">-- Назначить себе --</option>
+          <th:block th:if="${availableUsers != null}">
+            <option th:each="user : ${availableUsers}"
+                    th:value="${user.id}"
+                    th:text="${user.name}"
+                    th:selected="${task.assignedUser != null and task.assignedUser.id == user.id}">
+            </option>
+          </th:block>
+        </select>
+        <div th:if="${#fields.hasErrors('assignedUser')}"
+             th:errors="*{assignedUser}"
+             class="error"></div>
         <br/>
 
         <label>Количество XP за выполнение:</label>

@@ -27,7 +27,7 @@ public class Task {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="assigned_to_user_id")
 	private User assignedUser;
 

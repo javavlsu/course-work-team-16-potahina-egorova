@@ -135,7 +135,7 @@ public class TaskExecutionLogController {
                     task.getPoints());
             userService.save(assignedUser);
         }
-        return "redirect:/table";
+        return "redirect:/tasks";
     }
 
     @PostMapping("/task-execution/save-media/{logId}")

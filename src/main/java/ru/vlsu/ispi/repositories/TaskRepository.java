@@ -10,6 +10,7 @@ import ru.vlsu.ispi.beans.Task;
 import ru.vlsu.ispi.beans.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Integer> {
@@ -27,4 +28,7 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
             @Param("search") String search,
             Pageable pageable
     );
+
+    @Query("SELECT t FROM Task t JOIN FETCH t.assignedUser WHERE t.id = :id")
+    Optional<Task> findByIdWithAssignedUser(@Param("id") Integer id);
 }

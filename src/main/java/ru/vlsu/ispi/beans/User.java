@@ -44,6 +44,9 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Task> tasks = new ArrayList<>();
 
+	@OneToMany(mappedBy = "assignedUser", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Task> assignedTasks = new ArrayList<>();
+
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Notification> notifications = new ArrayList<>();
 
@@ -75,6 +78,10 @@ public class User {
 		Set<User> allFriends = new HashSet<>(friends);
 		allFriends.addAll(friendsOf);
 		return new ArrayList<>(allFriends);
+	}
+
+	public void setAllFriends(List<User> friendsOf) {
+		this.friendsOf = friendsOf;
 	}
 
 	public void setId(int id) {

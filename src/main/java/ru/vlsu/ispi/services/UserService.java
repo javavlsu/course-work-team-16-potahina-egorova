@@ -12,6 +12,7 @@ import ru.vlsu.ispi.repositories.NotificationRepository;
 import ru.vlsu.ispi.repositories.UserRepository;
 import ru.vlsu.ispi.beans.User;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

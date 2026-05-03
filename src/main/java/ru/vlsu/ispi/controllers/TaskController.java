@@ -17,9 +17,7 @@ import ru.vlsu.ispi.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -128,39 +126,47 @@ public class TaskController {
     }
 
     @GetMapping({"/add", "/edit"})
-    public String showTaskForm(@RequestParam(value = "id", required = false) Integer id, Model model,
-                               HttpSession session) {
+    public String showTaskForm(@RequestParam(value = "id", required = false) Integer id,
+                               Model model, HttpSession session) {
         if (session.getAttribute("user") == null) {
             return "redirect:/login";
         }
 
         User currentUser = (User) session.getAttribute("user");
 
+        // Принудительно загружаем друзей
+        if (currentUser.getFriends() == null) {
+            currentUser.setFriends(new ArrayList<>());
+        }
+        if (currentUser.getAllFriends() == null) {
+            currentUser.setAllFriends(new ArrayList<>());
+        }
+
         Task task;
         if (id != null && id > 0) {
             task = taskService.getTaskById(id)
                     .orElseThrow(() -> new RuntimeException("Task not found"));
-
-            // Принудительно загружаем связанные объекты
-            if (task.getUser() != null) {
-                Hibernate.initialize(task.getUser());
-            }
-            if (task.getTaskList() != null) {
-                Hibernate.initialize(task.getTaskList());
-            }
         } else {
             task = new Task();
-            // Устанавливаем текущего пользователя как создателя по умолчанию
             task.setUser(currentUser);
         }
-        model.addAttribute("task", task);
 
-        // Передаём текущего пользователя для отображения в форме
+        model.addAttribute("task", task);
         model.addAttribute("currentUser", currentUser);
 
-        // Получаем только списки задач текущего пользователя
         List<TaskList> taskLists = taskListService.findByUser(currentUser);
         model.addAttribute("taskLists", taskLists);
+
+        // Формируем список доступных пользователей
+        Set<User> availableUsersSet = new HashSet<>();
+        availableUsersSet.add(currentUser); // себя
+        availableUsersSet.addAll(currentUser.getFriends()); // друзья
+        availableUsersSet.addAll(currentUser.getAllFriends()); // те, кто добавил нас
+
+        List<User> availableUsers = new ArrayList<>(availableUsersSet);
+        availableUsers.sort(Comparator.comparing(User::getName));
+
+        model.addAttribute("availableUsers", availableUsers);
 
         model.addAttribute("categories", Arrays.asList(Task.Category.values()));
         model.addAttribute("statuses", Arrays.asList(Task.Status.values()));
@@ -168,49 +174,37 @@ public class TaskController {
         return "taskForm";
     }
 
+
+
     @PostMapping("/add_edit")
     public String addEditTask(@Valid @ModelAttribute("task") Task task,
-                              BindingResult result,
-                              Model model, HttpSession session) {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/login";
+                              @RequestParam(value = "assignedUserId", required = false) Integer assignedUserId,
+                              BindingResult result, Model model, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+
+        // Обработка назначенного пользователя
+        if (assignedUserId != null && assignedUserId > 0) {
+            User assignedUser = userService.getUserById(assignedUserId)
+                    .orElse(null);
+            if (!taskService.isValidAssignedUser(currentUser, assignedUser)) {
+                result.rejectValue("assignedUserId", "error.assignedUser",
+                        "Нельзя назначить задачу пользователю, который не является вами или вашим другом");
+            } else {
+                task.setAssignedUser(assignedUser);
+            }
+        } else {
+            task.setAssignedUser(currentUser); // по умолчанию — текущий пользователь
         }
 
         if (result.hasErrors()) {
+            List<TaskList> taskLists = taskListService.findByUser(currentUser);
+            model.addAttribute("taskLists", taskLists);
+            model.addAttribute("categories", Arrays.asList(Task.Category.values()));
+            model.addAttribute("statuses", Arrays.asList(Task.Status.values()));
             return "taskForm";
         }
 
-        if (task.getId() == 0) {
-            // Создание новой задачи
-            taskService.createTask(
-                    task.getTitle(),
-                    task.getTaskList(),
-                    task.getUser(),
-                    task.getAssignedUser(),
-                    task.getCategory(),
-                    task.getStatus(),
-                    task.getDetails(),
-                    task.getAssignedAt(),
-                    task.getDeadlineAt(),
-                    task.getPoints()
-            );
-        } else {
-            // Обновление существующей задачи
-            taskService.updateTask(
-                    task.getId(),
-                    task.getTitle(),
-                    task.getTaskList(),
-                    task.getUser(),
-                    task.getAssignedUser(),
-                    task.getCategory(),
-                    task.getStatus(),
-                    task.getDetails(),
-                    task.getAssignedAt(),
-                    task.getDeadlineAt(),
-                    task.getPoints()
-            );
-        }
-
+        taskService.save(task);
         return "redirect:/tasks";
     }
 
