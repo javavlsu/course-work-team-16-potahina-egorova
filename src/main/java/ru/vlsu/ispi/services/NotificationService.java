@@ -59,4 +59,45 @@ public class NotificationService {
     public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();
     }
+
+    public void createTaskCompletionNotification(Task task) {
+        User creator = task.getUser();
+        User assignedUser = task.getAssignedUser();
+
+        String pointsText = task.getPoints() > 0 ? " и " + task.getPoints() + " XP" : "";
+
+        // Уведомление для создателя задачи
+        if (creator != null) {
+            Notification creatorNotification = new Notification();
+            creatorNotification.setUser(creator);
+            creatorNotification.setText(
+                    "Задача \"" + task.getTitle() + "\" завершена");
+            creatorNotification.setIsRead(false);
+            creatorNotification.setCreatedAt(LocalDateTime.now());
+            notificationRepository.save(creatorNotification);
+        }
+
+        // Уведомление для исполнителя
+        if (assignedUser != null && !assignedUser.equals(creator)) {
+            Notification assignedNotification = new Notification();
+            assignedNotification.setUser(assignedUser);
+            assignedNotification.setText
+                    ("Вы завершили задачу \"" + task.getTitle() + "\"");
+            assignedNotification.setIsRead(false);
+            assignedNotification.setCreatedAt(LocalDateTime.now());
+            notificationRepository.save(assignedNotification);
+        }
+    }
+
+    public List<Notification> getUnreadNotifications(Integer userId) {
+        return notificationRepository.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId);
+    }
+
+    public Optional<Notification> findById(int id) {
+        return notificationRepository.findById(id);
+    }
+
+    public Notification save(Notification notification) {
+        return notificationRepository.save(notification);
+    }
 }

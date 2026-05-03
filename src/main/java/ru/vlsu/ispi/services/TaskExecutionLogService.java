@@ -25,6 +25,11 @@ public class TaskExecutionLogService {
                                                    String completionReport, MusicMedia musicMedia,
                                                    VisualMedia visualMedia, TimerMode timerMode,
                                                    LocalDateTime startTime, LocalDateTime endTime) {
+        Optional<TaskExecutionLog> existingActiveLog = findByTaskId(task.getId());
+        if (existingActiveLog.isPresent()) {
+            throw new RuntimeException("Для этой задачи уже есть активный лог выполнения");
+        }
+
         TaskExecutionLog log = new TaskExecutionLog();
         log.setTask(task);
         log.setIsReportAttached(isReportAttached);
@@ -78,6 +83,11 @@ public class TaskExecutionLogService {
     }
 
     public Optional<TaskExecutionLog> findByTaskId(Integer taskId) {
-        return taskExecutionLogRepository.findByTaskId(taskId);
+        List<TaskExecutionLog> logs = taskExecutionLogRepository.findByTaskId(taskId);
+
+        // Фильтруем только активные логи (где endTime == null)
+        return logs.stream()
+                .filter(log -> log.getEndTime() == null)
+                .findFirst(); // берём первый активный лог
     }
 }

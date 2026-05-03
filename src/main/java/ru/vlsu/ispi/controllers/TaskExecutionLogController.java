@@ -27,19 +27,23 @@ public class TaskExecutionLogController {
     private final VisualMediaService visualMediaService;
     private final TaskService taskService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
 
     public TaskExecutionLogController(TaskExecutionLogService taskExecutionLogService,
                                       MusicMediaService musicMediaService,
                                       VisualMediaService visualMediaService,
                                       TaskService taskService,
-                                      UserService userService) {
+                                      UserService userService,
+                                      NotificationService notificationService) {
         this.taskExecutionLogService = taskExecutionLogService;
         this.musicMediaService = musicMediaService;
         this.visualMediaService = visualMediaService;
         this.taskService = taskService;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
+
 
     @GetMapping("/start-execution")
     public String startTaskExecution(
@@ -49,36 +53,34 @@ public class TaskExecutionLogController {
     ) {
         Task task = taskService.getTaskById(taskId)
                 .orElseThrow(() -> new RuntimeException("Задача не найдена"));
-// Если задача уже завершена, запрещаем доступ к выполнению
+
         if (task.getStatus() == Task.Status.Completed) {
             redirectAttributes.addFlashAttribute("error", "Эта задача уже завершена.");
-            return "redirect:/tasks"; // или другой ваш URL со списком задач
+            return "redirect:/tasks";
         }
-        Optional<TaskExecutionLog> existingLog =
-                taskExecutionLogService.findByTaskId(taskId);
+
+        Optional<TaskExecutionLog> existingLog = taskExecutionLogService.findByTaskId(taskId);
         TaskExecutionLog log;
+
         if (existingLog.isPresent()) {
-// Если запись уже есть, продолжаем выполнение
             log = existingLog.get();
             if (task.getStatus() != Task.Status.InProgress) {
                 task.setStatus(Task.Status.InProgress);
-                taskService.save(task); // Сохраняем измененный статус
+                taskService.save(task);
             }
         } else {
-// Если записи нет, создаем новую
             log = new TaskExecutionLog();
             log.setTask(task);
             log.setCompletionReport("");
             log.setStartTime(LocalDateTime.now());
             log = taskExecutionLogService.save(log);
             task.setStatus(Task.Status.Started);
-            taskService.save(task); // Сохраняем измененный статус
+            taskService.save(task);
         }
+
         model.addAttribute("log", log);
-        model.addAttribute("musicMediaList",
-                musicMediaService.getAllMusicMedia());
-        model.addAttribute("visualMediaList",
-                visualMediaService.getAllVisualMedia());
+        model.addAttribute("musicMediaList", musicMediaService.getAllMusicMedia());
+        model.addAttribute("visualMediaList", visualMediaService.getAllVisualMedia());
         return "taskExecutionLog";
     }
 
@@ -113,28 +115,32 @@ public class TaskExecutionLogController {
         return "taskCompletion"; // Новая страница
     }
 
+
     @PostMapping("/finish-execution")
     public String finishTaskExecution(@RequestParam("logId") Integer logId,
                                       @RequestParam("report") String report) {
         TaskExecutionLog log =
                 taskExecutionLogService.getTaskExecutionLogById(logId)
                         .orElseThrow(() -> new RuntimeException("Лог не найден"));
-// Обновляем данные лога
+
         log.setCompletionReport(report);
         log.setIsReportAttached(report != null && !report.trim().isEmpty());
         log.setEndTime(LocalDateTime.now());
         taskExecutionLogService.save(log);
-// Обновляем статус задачи
+
         Task task = log.getTask();
         task.setStatus(Task.Status.Completed);
         taskService.save(task);
-// Начисляем очки пользователю
+
         User assignedUser = task.getAssignedUser();
         if (assignedUser != null) {
-            assignedUser.setTotalPoints(assignedUser.getTotalPoints() +
-                    task.getPoints());
+            assignedUser.setTotalPoints(assignedUser.getTotalPoints() + task.getPoints());
             userService.save(assignedUser);
         }
+
+        // Отправляем уведомления
+        notificationService.createTaskCompletionNotification(task);
+
         return "redirect:/tasks";
     }
 
