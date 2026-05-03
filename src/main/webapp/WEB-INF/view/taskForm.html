@@ -142,15 +142,17 @@
         <br/>
 
 
+
         <label>Дедлайн:</label>
         <input type="datetime-local"
                th:field="*{deadlineAt}"
                id="deadlineAt"
-               name="deadlineAt"/>
+               name="deadlineAt"
+               min="" />
         <div th:if="${#fields.hasErrors('deadlineAt')}"
              th:errors="*{deadlineAt}"
              class="error"
-             style="display: none;"></div>
+             style="color: red; font-size: 0.9em;"></div>
         <br/>
 
         <label>Назначить пользователю:</label>
@@ -180,20 +182,20 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const deadlineInput = document.getElementById('deadlineAt');
-      const now = new Date();
-      now.setMinutes(now.getMinutes() + 5);
-      const minDateTime = now.toISOString().slice(0, 16);
-      deadlineInput.min = minDateTime;
-    });
+        const deadlineInput = document.getElementById('deadlineAt');
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const deadlineInput = document.querySelector('input[type="datetime-local"][name="deadlineAt"]');
+        // Устанавливаем минимальное время: сейчас + 5 минут
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + 5);
+        const minDateTime = now.toISOString().slice(0, 16);
+        deadlineInput.min = minDateTime;
 
+        // Валидация при изменении значения
         deadlineInput.addEventListener('change', function() {
             validateDeadline(this.value);
         });
 
+        // Валидация при отправке формы
         document.querySelector('.task-form').addEventListener('submit', function(e) {
             const isValid = validateDeadline(deadlineInput.value, true);
             if (!isValid) {
@@ -202,10 +204,10 @@
         });
     });
 
-    function validateDeadline(dateTimeString, isSubmit) {
-        const errorElement = document.querySelector('[th\\:if*="deadlineAt"]');
+    function validateDeadline(dateTimeString, isSubmit = false) {
+        const errorElement = document.querySelector('.error[th\\:if*="deadlineAt"]');
         const now = new Date();
-        now.setMinutes(now.getMinutes() + 5); // +5 минут
+        now.setMinutes(now.getMinutes() + 5); // +5 минут к текущему времени
 
         if (!dateTimeString) {
             showError(errorElement, "Дедлайн обязателен");
@@ -215,10 +217,16 @@
         const selectedDate = new Date(dateTimeString.replace('T', ' '));
 
         if (selectedDate < now) {
-            const minDate = new Date(now);
-            const formattedMin = minDate.toISOString().slice(0, 16);
-            showError(errorElement, `Дедлайн должен быть не ранее ${formattedMin.replace('T', ' ')}`);
-            deadlineInput.value = formattedMin; // автоматически подставляем минимальное допустимое время
+            const formattedMin = now.toLocaleString('ru-RU', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            showError(errorElement, `Дедлайн должен быть не ранее ${formattedMin}`);
+            // Автоматически подставляем минимальное допустимое время
+            deadlineInput.value = now.toISOString().slice(0, 16);
             return false;
         } else {
             clearError(errorElement);
@@ -227,13 +235,17 @@
     }
 
     function showError(element, message) {
-        element.textContent = message;
-        element.style.display = 'block';
+        if (element) {
+            element.textContent = message;
+            element.style.display = 'block';
+        }
     }
 
     function clearError(element) {
-        element.textContent = '';
-        element.style.display = 'none';
+        if (element) {
+            element.textContent = '';
+            element.style.display = 'none';
+        }
     }
   </script>
 </body>

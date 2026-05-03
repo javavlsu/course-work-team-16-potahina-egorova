@@ -18,6 +18,7 @@ import ru.vlsu.ispi.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -242,15 +243,24 @@ public class TaskController {
         return "taskForm";
     }
 
-
-
     @PostMapping("/add_edit")
-    public String addEditTask(@Valid @ModelAttribute("task") Task task, BindingResult result,
+    public String addEditTask(@Valid @ModelAttribute("task") Task task,
+                              BindingResult result,
                               @RequestParam(value = "assignedUserId", required = false) Integer assignedUserId,
-                               Model model, HttpSession session) {
+                              Model model, HttpSession session) {
+
         User currentUser = (User) session.getAttribute("user");
 
-        // Обработка назначенного пользователя
+        // Проверка дедлайна: не раньше чем через 5 минут от текущего времени
+        if (task.getDeadlineAt() != null) {
+            LocalDateTime nowPlus5Minutes = LocalDateTime.now().plusMinutes(5);
+            if (task.getDeadlineAt().isBefore(nowPlus5Minutes)) {
+                result.rejectValue("deadlineAt", "invalid.deadline",
+                        "Дедлайн должен быть не ранее чем через 5 минут от текущего времени");
+            }
+        }
+
+        // Обработка назначенного пользователя (существующий код)
         if (assignedUserId != null && assignedUserId > 0) {
             User assignedUser = userService.getUserById(assignedUserId)
                     .orElse(null);
@@ -261,14 +271,16 @@ public class TaskController {
                 task.setAssignedUser(assignedUser);
             }
         } else {
-            task.setAssignedUser(currentUser); // по умолчанию — текущий пользователь
+            task.setAssignedUser(currentUser);
         }
 
+        // Обработка taskList (существующий код)
         if (task.getTaskList() != null && task.getTaskList().getId() == -1) {
             task.setTaskList(null);
         }
 
         if (result.hasErrors()) {
+            // Логика обработки ошибок (существующий код)
             List<TaskList> taskLists = taskListService.findByUser(currentUser);
             model.addAttribute("taskLists", taskLists);
             model.addAttribute("categories", Arrays.asList(Task.Category.values()));
