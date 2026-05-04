@@ -4,13 +4,11 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.vlsu.ispi.beans.FriendRequest;
-import ru.vlsu.ispi.beans.Notification;
-import ru.vlsu.ispi.beans.UserSearchCriteria;
+import ru.vlsu.ispi.beans.*;
+import ru.vlsu.ispi.repositories.AchievementRepository;
 import ru.vlsu.ispi.repositories.FriendRequestRepository;
 import ru.vlsu.ispi.repositories.NotificationRepository;
 import ru.vlsu.ispi.repositories.UserRepository;
-import ru.vlsu.ispi.beans.User;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
@@ -23,14 +21,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final FriendRequestRepository friendRequestRepository;
+    private final AchievementService achievementService;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        NotificationRepository notificationRepository,
-                       FriendRequestRepository friendRequestRepository) {
+                       FriendRequestRepository friendRequestRepository,
+                       AchievementService achievementService) {
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
         this.friendRequestRepository = friendRequestRepository;
+        this.achievementService = achievementService;
     }
 
 //    public List<User> searchUsers(UserSearchCriteria criteria) {
@@ -125,6 +126,7 @@ public class UserService {
     }
 
 
+    @Transactional
     public User save(User user) {
         // Валидация обязательных полей
         if (user.getName() == null || user.getName().trim().isEmpty()) {
@@ -142,7 +144,13 @@ public class UserService {
             user.setTotalPoints(0);
         }
 
-        return userRepository.save(user);
+        // Сохраняем пользователя в БД и получаем сохранённый объект
+        User savedUser = userRepository.save(user);
+
+        // Проверяем и назначаем достижения после сохранения
+        achievementService.checkAndAssignAchievements(savedUser);
+
+        return savedUser;
     }
 
     private boolean isValidEmail(String email) {

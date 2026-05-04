@@ -18,4 +18,6 @@ public interface UserAchievementRepository extends JpaRepository<UserAchievement
             "LEFT JOIN FETCH ua.task " +
             "WHERE ua.user.id = :userId")
     List<UserAchievement> findByUserId(@Param("userId") int userId);
+
+    boolean existsByUserIdAndAchievementId(Integer userId, Integer achievementId);
 }

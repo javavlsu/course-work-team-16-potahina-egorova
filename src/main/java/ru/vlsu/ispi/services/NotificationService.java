@@ -100,4 +100,14 @@ public class NotificationService {
     public Notification save(Notification notification) {
         return notificationRepository.save(notification);
     }
+
+
+    public void createAchievementNotification(User user, Achievement achievement) {
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setText("Поздравляем! Вы получили достижение: " + achievement.getTitle());
+        notification.setIsRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+    }
 }
