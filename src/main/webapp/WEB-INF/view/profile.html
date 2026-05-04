@@ -280,8 +280,8 @@
             <table border="1">
                 <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Название достижения</th>
+                    <th>Описание</th>
                     <th>Задача</th>
                     <th>Дата получения</th>
                 </tr>
@@ -294,8 +294,8 @@
                     </td>
                 </tr>
                 <tr th:each="ua : ${userAchievements}">
-                    <td th:text="${ua.id}"></td>
                     <td th:text="${ua.achievement != null ? ua.achievement.title : 'Не указано'}"></td>
+                    <td th:text="${ua.achievement != null ? ua.achievement.description : 'Не указано'}"></td>
                     <td th:text="${ua.task != null ? ua.task.title : 'Не указана'}"></td>
                     <td th:text="${#temporals.format(ua.achievedDate, 'dd.MM.yyyy HH:mm')}"></td>
                 </tr>

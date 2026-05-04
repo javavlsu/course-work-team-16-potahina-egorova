@@ -171,6 +171,22 @@
         .filter-group { display: inline-block; margin-right: 15px; }
         .pagination { margin-top: 20px; text-align: center; }
         .page-link { margin: 0 5px; padding: 5px 10px; border: 1px solid #ddd; text-decoration: none; }
+
+
+        .notification-item.unread {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .notification-item.read {
+            opacity: 0.7;
+            background-color: #f8f9fa;
+        }
+
+        .mark-read-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -195,11 +211,26 @@
         </div>
 
         <!-- Запросы в друзья -->
-        <div th:if="${#lists.isEmpty(pendingRequests)}">
-            <p>Нет входящих запросов в друзья</p>
-        </div>
         <table border="1" th:if="!${#lists.isEmpty(pendingRequests)}">
-            <!-- существующая таблица запросов в друзья -->
+            <thead>
+            <tr>
+                <th>От кого</th>
+                <th>Действие</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="request : ${pendingRequests}">
+                <td th:text="${request.sender.name}"></td>
+                <td>
+                    <form th:action="@{/notifications/accept-friend-request/{id}(id=${request.id})}" method="post" style="display:inline;">
+                        <button type="submit" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; margin-right: 5px;">Принять</button>
+                    </form>
+                    <form th:action="@{/notifications/reject-friend-request/{id}(id=${request.id})}" method="post" style="display:inline;">
+                        <button type="submit" style="background: #f44336; color: white; border: none; padding: 5px 10px;">Отклонить</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
         </table>
 
         <!-- Уведомления о задачах -->

@@ -65,6 +65,7 @@ public class NotificationController {
         return "redirect:/notifications";
     }
 
+
     @PostMapping("/mark-read/{notificationId}")
     @ResponseBody
     public Map<String, Object> markNotificationAsRead(@PathVariable Integer notificationId,
@@ -78,13 +79,23 @@ public class NotificationController {
         }
 
         Optional<Notification> notificationOpt = notificationService.findById(notificationId);
-        if (notificationOpt.isPresent()) {
-            Notification notification = notificationOpt.get();
-            if (notification.getUser().getId() == currentUser.getId()) {
-                notification.setIsRead(true);
-                notificationService.save(notification);
-            }
+        if (!notificationOpt.isPresent()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("error", "Уведомление не найдено");
+            return response;
         }
+
+        Notification notification = notificationOpt.get();
+        if (notification.getUser().getId() != currentUser.getId()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("error", "Уведомление принадлежит другому пользователю");
+            return response;
+        }
+
+        notification.setIsRead(true);
+        notificationService.save(notification);
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
