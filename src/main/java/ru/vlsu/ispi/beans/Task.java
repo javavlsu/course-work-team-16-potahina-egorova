@@ -31,6 +31,9 @@ public class Task {
 	@JoinColumn(name="assigned_to_user_id")
 	private User assignedUser;
 
+	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<TaskExecutionLog> executionLogs = new ArrayList<>();
+
 	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
 	private List<Notification> notifications = new ArrayList<>();
 

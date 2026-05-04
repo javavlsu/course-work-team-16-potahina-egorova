@@ -14,7 +14,7 @@ public class TaskExecutionLog {
 	@Column
 	private int id;
 
-	@OneToOne(cascade = CascadeType.MERGE)
+	@OneToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE})
 	@JoinColumn
 	private Task task;
 
