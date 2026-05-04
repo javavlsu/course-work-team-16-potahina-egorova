@@ -176,13 +176,13 @@
 
 
         .notification-item.unread {
-            background-color: #fff3cd;
+<!--            background-color: #fff3cd;-->
             border-left: 4px solid #ffc107;
         }
 
         .notification-item.read {
             opacity: 0.7;
-            background-color: #f8f9fa;
+<!--            background-color: #f8f9fa;-->
         }
 
         .mark-read-btn:disabled {
@@ -244,8 +244,8 @@
                  th:class="${notification.isRead ? 'notification-item read' : 'notification-item unread'}">
                 <p th:text="${notification.text}"></p>
                 <small th:text="${#temporals.format(notification.createdAt, 'dd.MM.yyyy HH:mm')}"></small>
-                <button class="mark-read-btn"
-                        th:data-notification-id="${notification.id}">Отметить прочитанным</button>
+<!--                <button class="mark-read-btn"-->
+<!--                        th:data-notification-id="${notification.id}">Отметить прочитанным</button>-->
             </div>
         </div>
     </div>
