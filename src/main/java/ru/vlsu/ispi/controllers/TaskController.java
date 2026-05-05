@@ -82,10 +82,13 @@ public class TaskController {
         return "tasks";
     }
 
+
     @GetMapping("/assigned")
     public String showAssignedTasks(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "status", required = false) Task.Status status,
+            @RequestParam(value = "search", required = false) String search,
             Model model,
             HttpSession session) {
 
@@ -96,13 +99,18 @@ public class TaskController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        // Получаем задачи, назначенные текущему пользователю, но созданные не им
-        Page<Task> assignedTasksPage = taskService.findTasksAssignedToUser(currentUser, pageable);
+        // Получаем задачи с фильтрацией
+        Page<Task> assignedTasksPage = taskService.findTasksAssignedToUserWithFilters(
+                currentUser, status, search, pageable);
 
         model.addAttribute("assignedTasks", assignedTasksPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", assignedTasksPage.getTotalPages());
         model.addAttribute("totalElements", assignedTasksPage.getTotalElements());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("status", status);
+        model.addAttribute("search", search);
+        model.addAttribute("statuses", Arrays.asList(Task.Status.values()));
 
         return "assignedTasks";
     }

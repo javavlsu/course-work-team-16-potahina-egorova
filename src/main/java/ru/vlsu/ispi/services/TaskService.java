@@ -149,4 +149,9 @@ public class TaskService {
     public Page<Task> findTasksAssignedToUser(User user, Pageable pageable) {
         return taskRepository.findByAssignedUserAndUserNot(user, user, pageable);
     }
+
+    public Page<Task> findTasksAssignedToUserWithFilters(
+            User user, Task.Status status, String search, Pageable pageable) {
+        return taskRepository.findByAssignedUserAndFilters(user, status, search, pageable);
+    }
 }

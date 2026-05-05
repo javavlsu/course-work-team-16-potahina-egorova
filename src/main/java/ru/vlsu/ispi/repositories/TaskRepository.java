@@ -44,4 +44,16 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
             @Param("assignedUser") User user,
             Pageable pageable
     );
+
+    @Query("SELECT t FROM Task t WHERE t.assignedUser = :user " +
+            "AND (:status IS NULL OR t.status = :status) " +
+            "AND (:search IS NULL OR LOWER(t.title) LIKE CONCAT('%', LOWER(:search), '%')) " +
+            "ORDER BY " +
+            "CASE WHEN t.status = 'Completed' THEN 1 ELSE 0 END ASC, " +
+            "t.id DESC")
+    Page<Task> findByAssignedUserAndFilters(
+            @Param("user") User user,
+            @Param("status") Task.Status status,
+            @Param("search") String search,
+            Pageable pageable);
 }
