@@ -28,6 +28,7 @@ public class TaskExecutionLogController {
     private final TaskService taskService;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final TimerModeService timerModeService;
 
 
     public TaskExecutionLogController(TaskExecutionLogService taskExecutionLogService,
@@ -35,13 +36,15 @@ public class TaskExecutionLogController {
                                       VisualMediaService visualMediaService,
                                       TaskService taskService,
                                       UserService userService,
-                                      NotificationService notificationService) {
+                                      NotificationService notificationService,
+                                      TimerModeService timerModeService) {
         this.taskExecutionLogService = taskExecutionLogService;
         this.musicMediaService = musicMediaService;
         this.visualMediaService = visualMediaService;
         this.taskService = taskService;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.timerModeService = timerModeService;
     }
 
 
@@ -84,6 +87,7 @@ public class TaskExecutionLogController {
         return "taskExecutionLog";
     }
 
+
     @GetMapping("/task-execution")
     public String showTaskExecution(@RequestParam("id") Integer logId, Model model,
                                     HttpSession session) {
@@ -98,6 +102,10 @@ public class TaskExecutionLogController {
 
         List<MusicMedia> musicMediaList = musicMediaService.getAllMusicMedia();
         List<VisualMedia> visualMediaList = visualMediaService.getAllVisualMedia();
+
+        // Получаем режимы таймера из БД
+        List<TimerMode> timerModes = timerModeService.getAllTimerModes();
+        model.addAttribute("timerModes", timerModes);
 
         model.addAttribute("musicMediaList", musicMediaList);
         model.addAttribute("visualMediaList", visualMediaList);

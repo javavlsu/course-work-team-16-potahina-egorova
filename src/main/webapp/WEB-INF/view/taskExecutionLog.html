@@ -172,6 +172,35 @@
       font-size: 0.9rem;
       margin-top: auto;
     }
+
+    .timer-controls {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .mode-selection {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .mode-selection label {
+        font-weight: 500;
+        color: #333;
+        margin-right: 10px;
+    }
+
+    #timerDisplay {
+        transition: color 0.3s ease;
+    }
+
+    #phaseDisplay {
+        font-style: italic;
+        font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -241,24 +270,54 @@
       <button type="submit" class="save-button">Сохранить выбор медиа</button>
     </form>
 
-    <div class="execution-controls">
-      <h3>Управление задачей</h3>
-      <div class="control-buttons">
-        <button id="startTimerBtn" class="save-button start-timer-btn" onclick="startTimer()">
-          Запустить таймер
-        </button>
-        <div id="timerDisplay" class="timer-display" style="display: none;">00:00</div>
-        <a th:href="@{/tasks/complete-execution(logId=${log.id})}"
-           class="save-button complete-task-btn">
-          Завершить задачу
-        </a>
-        <a th:href="@{/tasks}"
-           class="btn-view"
-           style="color: #FF8C00; text-decoration: underline;">
-          Вернуться к задачам
-        </a>
+
+    <div class="timer-controls">
+      <h3>Таймер</h3>
+      <div class="mode-selection">
+        <label for="timerMode">Режим таймера:</label>
+        <select id="timerMode" class="save-button" style="margin-left: 10px;">
+          <option th:each="mode : ${timerModes}"
+                  th:value="${mode.id}"
+                  th:text="${mode.modeName}">
+          </option>
+        </select>
       </div>
+
+      <div id="timerDisplay" style="font-size: 32px; font-weight: bold; margin: 15px 0; color: #333;">00:00</div>
+      <div id="phaseDisplay" style="font-size: 16px; margin-bottom: 15px; color: #666;"></div>
+
+      <button id="startTimerBtn" class="save-button" style="background-color: #28a745;">Запустить таймер</button>
+      <button id="pauseTimerBtn" class="save-button" style="background-color: #ffc107; display: none;">Пауза</button>
+      <button id="resetTimerBtn" class="save-button" style="background-color: #6c757d;">Сброс</button>
+      <a th:href="@{/tasks/complete-execution(logId=${log.id})}"
+         class="save-button complete-task-btn">
+        Завершить задачу
+      </a>
+      <a th:href="@{/tasks}"
+         class="btn-view"
+         style="color: #FF8C00; text-decoration: underline;">
+        Вернуться к задачам
+      </a>
     </div>
+
+<!--    <div class="execution-controls">-->
+<!--      <h3>Управление задачей</h3>-->
+<!--      <div class="control-buttons">-->
+<!--        <button id="startTimerBtn" class="save-button start-timer-btn" onclick="startTimer()">-->
+<!--          Запустить таймер-->
+<!--        </button>-->
+<!--        <div id="timerDisplay" class="timer-display" style="display: none;">00:00</div>-->
+<!--        <a th:href="@{/tasks/complete-execution(logId=${log.id})}"-->
+<!--           class="save-button complete-task-btn">-->
+<!--          Завершить задачу-->
+<!--        </a>-->
+<!--        <a th:href="@{/tasks}"-->
+<!--           class="btn-view"-->
+<!--           style="color: #FF8C00; text-decoration: underline;">-->
+<!--          Вернуться к задачам-->
+<!--        </a>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </div>
 </div>
@@ -268,6 +327,174 @@
 </div>
 
 <script>
+  let timerInterval;
+let currentTime = 0;
+let isRunning = false;
+let isPaused = false;
+let currentPhase = 'work'; // work, short_break, long_break
+let phaseIndex = 0;
+const phases = ['work', 'short_break', 'work', 'long_break'];
+let selectedMode = null;
+
+// Получаем данные режимов из Thymeleaf
+const timerModesData = [[${timerModes}]];
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modeSelect = document.getElementById('timerMode');
+
+    // Заполняем select режимами
+    timerModesData.forEach(mode => {
+        const option = document.createElement('option');
+        option.value = mode.id;
+        option.textContent = mode.modeName;
+        modeSelect.appendChild(option);
+    });
+
+    // Устанавливаем первый режим по умолчанию
+    if (timerModesData.length > 0) {
+        selectedMode = timerModesData[0];
+        updatePhaseDisplay();
+    }
+
+    modeSelect.addEventListener('change', function() {
+        const modeId = parseInt(this.value);
+        selectedMode = timerModesData.find(mode => mode.id === modeId);
+        resetTimer();
+        updatePhaseDisplay();
+    });
+});
+
+function startTimer() {
+    if (!selectedMode) {
+        alert('Выберите режим таймера!');
+        return;
+    }
+
+    if (isPaused) {
+        isPaused = false;
+        isRunning = true;
+        document.getElementById('pauseTimerBtn').style.display = 'inline-block';
+        document.getElementById('startTimerBtn').style.display = 'none';
+        return;
+    }
+
+    resetTimer();
+    isRunning = true;
+    document.getElementById('pauseTimerBtn').style.display = 'inline-block';
+    document.getElementById('startTimerBtn').style.display = 'none';
+    startPhase();
+}
+
+function pauseTimer() {
+    isPaused = true;
+    isRunning = false;
+    clearInterval(timerInterval);
+    document.getElementById('pauseTimerBtn').style.display = 'none';
+    document.getElementById('startTimerBtn').style.display = 'inline-block';
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    isPaused = false;
+    currentPhase = 'work';
+    phaseIndex = 0;
+    updatePhaseDisplay();
+    document.getElementById('timerDisplay').textContent = '00:00';
+    document.getElementById('pauseTimerBtn').style.display = 'none';
+    document.getElementById('startTimerBtn').style.display = 'inline-block';
+}
+
+function startPhase() {
+    let durationInMinutes;
+
+    switch (currentPhase) {
+        case 'work':
+            durationInMinutes = selectedMode.workDurationMin;
+            break;
+        case 'short_break':
+            durationInMinutes = selectedMode.shortBreakMin;
+            break;
+        case 'long_break':
+            durationInMinutes = selectedMode.longBreakMin;
+            break;
+    }
+
+    currentTime = durationInMinutes * 60;
+    updateTimerDisplay();
+
+    timerInterval = setInterval(() => {
+        if (currentTime <= 0) {
+        clearInterval(timerInterval);
+            phaseIndex++;
+
+            // Если прошли все фазы — перезапускаем цикл
+            if (phaseIndex >= phases.length) {
+                phaseIndex = 0;
+            }
+
+            currentPhase = phases[phaseIndex];
+            updatePhaseDisplay();
+
+            // Автоматически начинаем следующую фазу
+            setTimeout(startPhase, 1000); // Задержка 1 секунда перед следующей фазой
+        } else {
+            currentTime--;
+            updateTimerDisplay();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(currentTime / 60);
+    const seconds = currentTime % 60;
+    document.getElementById('timerDisplay').textContent =
+        String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+}
+
+function updatePhaseDisplay() {
+    const phaseDisplay = document.getElementById('phaseDisplay');
+    let phaseName = '';
+
+    switch (currentPhase) {
+        case 'work':
+            phaseName = 'Работа';
+            break;
+        case 'short_break':
+            phaseName = 'Короткий перерыв';
+            break;
+        case 'long_break':
+            phaseName = 'Длинный перерыв';
+            break;
+    }
+
+    phaseDisplay.textContent = `Фаза: ${phaseName}`;
+
+    // Меняем цвет дисплея в зависимости от фазы
+    const timerDisplay = document.getElementById('timerDisplay');
+    switch (currentPhase) {
+        case 'work':
+            timerDisplay.style.color = '#28a745'; // Зелёный для работы
+            break;
+        case 'short_break':
+            timerDisplay.style.color = '#ffc107'; // Жёлтый для короткого перерыва
+            break;
+        case 'long_break':
+            timerDisplay.style.color = '#17a2b8'; // Голубой для длинного перерыва
+            break;
+    }
+}
+
+// Обработчики кнопок
+document.getElementById('startTimerBtn').addEventListener('click', startTimer);
+document.getElementById('pauseTimerBtn').addEventListener('click', pauseTimer);
+document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
+
+// Дополнительно: обработка закрытия страницы для остановки таймера
+window.addEventListener('beforeunload', function() {
+    clearInterval(timerInterval);
+});
+
   // Простой скрипт таймера
   let timerInterval;
   function startTimer() {
