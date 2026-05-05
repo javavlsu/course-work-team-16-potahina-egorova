@@ -326,74 +326,95 @@
   © Все-приложения, 2025
 </div>
 
-<script>
+
+<script th:inline="javascript">
   let timerInterval;
-let currentTime = 0;
-let isRunning = false;
-let isPaused = false;
-let currentPhase = 'work'; // work, short_break, long_break
-let phaseIndex = 0;
-const phases = ['work', 'short_break', 'work', 'long_break'];
-let selectedMode = null;
+  let currentTime = 0;
+  let isRunning = false;
+  let isPaused = false;
+  let currentPhase = 'work'; // work, short_break, long_break
+  let phaseIndex = 0;
+  const phases = ['work', 'short_break', 'work', 'long_break'];
+  let selectedMode = null;
 
-// Получаем данные режимов из Thymeleaf
-const timerModesData = [[${timerModes}]];
+  // th:inline="javascript" корректно преобразует список из Spring в массив JSON
+  const timerModesData = [[${timerModes}]];
 
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
     const modeSelect = document.getElementById('timerMode');
 
-    // Заполняем select режимами
-    timerModesData.forEach(mode => {
-        const option = document.createElement('option');
-        option.value = mode.id;
-        option.textContent = mode.modeName;
-        modeSelect.appendChild(option);
-    });
-
-    // Устанавливаем первый режим по умолчанию
-    if (timerModesData.length > 0) {
-        selectedMode = timerModesData[0];
-        updatePhaseDisplay();
+    // Инициализируем режимы, если они пришли с сервера
+    if (timerModesData && timerModesData.length > 0) {
+      selectedMode = timerModesData[0];
+      updatePhaseDisplay();
     }
 
+    // Обработчик смены режима
     modeSelect.addEventListener('change', function() {
-        const modeId = parseInt(this.value);
-        selectedMode = timerModesData.find(mode => mode.id === modeId);
-        resetTimer();
-        updatePhaseDisplay();
+      const modeId = parseInt(this.value);
+      selectedMode = timerModesData.find(mode => mode.id === modeId);
+      resetTimer();
+      updatePhaseDisplay();
     });
-});
 
-function startTimer() {
+    // Инициализация медиаплееров
+    const initialMusicId = [[${log.musicMedia?.id}]];
+    const initialVideoId = [[${log.visualMedia?.id}]];
+
+    if (initialMusicId) updateAudioPlayer(initialMusicId);
+    if (initialVideoId) updateVideoPlayer(initialVideoId);
+  });
+
+  function startTimer() {
     if (!selectedMode) {
-        alert('Выберите режим таймера!');
-        return;
+      alert('Выберите режим таймера!');
+      return;
     }
 
+    // Если таймер был на паузе — снимаем с паузы и запускаем отсчёт
     if (isPaused) {
-        isPaused = false;
-        isRunning = true;
-        document.getElementById('pauseTimerBtn').style.display = 'inline-block';
-        document.getElementById('startTimerBtn').style.display = 'none';
-        return;
+      isPaused = false;
+      isRunning = true;
+      document.getElementById('pauseTimerBtn').style.display = 'inline-block';
+      document.getElementById('startTimerBtn').style.display = 'none';
+      // Запускаем интервал отсчёта — ключевое исправление
+      timerInterval = setInterval(() => {
+        if (currentTime <= 0) {
+          clearInterval(timerInterval);
+          phaseIndex++;
+          if (phaseIndex >= phases.length) {
+            phaseIndex = 0;
+          }
+          currentPhase = phases[phaseIndex];
+          updatePhaseDisplay();
+          setTimeout(startPhase, 1000);
+        } else {
+          currentTime--;
+          updateTimerDisplay();
+        }
+      }, 1000);
+      return;
     }
 
-    resetTimer();
+  // Если таймер полностью остановлен — запускаем фазу с нуля
+  if (!isRunning) {
     isRunning = true;
     document.getElementById('pauseTimerBtn').style.display = 'inline-block';
     document.getElementById('startTimerBtn').style.display = 'none';
     startPhase();
+  }
 }
 
-function pauseTimer() {
+  function pauseTimer() {
     isPaused = true;
     isRunning = false;
     clearInterval(timerInterval);
     document.getElementById('pauseTimerBtn').style.display = 'none';
     document.getElementById('startTimerBtn').style.display = 'inline-block';
-}
+    document.getElementById('startTimerBtn').textContent = 'Продолжить';
+  }
 
-function resetTimer() {
+  function resetTimer() {
     clearInterval(timerInterval);
     isRunning = false;
     isPaused = false;
@@ -402,121 +423,95 @@ function resetTimer() {
     updatePhaseDisplay();
     document.getElementById('timerDisplay').textContent = '00:00';
     document.getElementById('pauseTimerBtn').style.display = 'none';
-    document.getElementById('startTimerBtn').style.display = 'inline-block';
-}
 
-function startPhase() {
-    let durationInMinutes;
+    const startBtn = document.getElementById('startTimerBtn');
+    startBtn.style.display = 'inline-block';
+    startBtn.textContent = 'Запустить таймер';
+  }
 
+  function startPhase() {
+    let durationInMinutes = 0;
+
+    // Используем поддержку обоих вариантов написания, так как формат
+    // зависит от настроек Jackson конвертера в Spring Boot
     switch (currentPhase) {
-        case 'work':
-            durationInMinutes = selectedMode.workDurationMin;
-            break;
-        case 'short_break':
-            durationInMinutes = selectedMode.shortBreakMin;
-            break;
-        case 'long_break':
-            durationInMinutes = selectedMode.longBreakMin;
-            break;
+      case 'work':
+        durationInMinutes = selectedMode.workDurationMin || selectedMode.work_duration_min;
+        break;
+      case 'short_break':
+        durationInMinutes = selectedMode.shortBreakMin || selectedMode.short_break_min;
+        break;
+      case 'long_break':
+        durationInMinutes = selectedMode.longBreakMin || selectedMode.long_break_min;
+        break;
     }
 
     currentTime = durationInMinutes * 60;
     updateTimerDisplay();
 
     timerInterval = setInterval(() => {
-        if (currentTime <= 0) {
+      if (currentTime <= 0) {
         clearInterval(timerInterval);
-            phaseIndex++;
+        phaseIndex++;
 
-            // Если прошли все фазы — перезапускаем цикл
-            if (phaseIndex >= phases.length) {
-                phaseIndex = 0;
-            }
-
-            currentPhase = phases[phaseIndex];
-            updatePhaseDisplay();
-
-            // Автоматически начинаем следующую фазу
-            setTimeout(startPhase, 1000); // Задержка 1 секунда перед следующей фазой
-        } else {
-            currentTime--;
-            updateTimerDisplay();
+        // Если прошли все 4 фазы — перезапускаем цикл
+        if (phaseIndex >= phases.length) {
+          phaseIndex = 0;
         }
-    }, 1000);
-}
 
-function updateTimerDisplay() {
-    const minutes = Math.floor(currentTime / 60);
-    const seconds = currentTime % 60;
-    document.getElementById('timerDisplay').textContent =
-        String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
-}
+        currentPhase = phases[phaseIndex];
+        updatePhaseDisplay();
 
-function updatePhaseDisplay() {
-    const phaseDisplay = document.getElementById('phaseDisplay');
-    let phaseName = '';
-
-    switch (currentPhase) {
-        case 'work':
-            phaseName = 'Работа';
-            break;
-        case 'short_break':
-            phaseName = 'Короткий перерыв';
-            break;
-        case 'long_break':
-            phaseName = 'Длинный перерыв';
-            break;
-    }
-
-    phaseDisplay.textContent = `Фаза: ${phaseName}`;
-
-    // Меняем цвет дисплея в зависимости от фазы
-    const timerDisplay = document.getElementById('timerDisplay');
-    switch (currentPhase) {
-        case 'work':
-            timerDisplay.style.color = '#28a745'; // Зелёный для работы
-            break;
-        case 'short_break':
-            timerDisplay.style.color = '#ffc107'; // Жёлтый для короткого перерыва
-            break;
-        case 'long_break':
-            timerDisplay.style.color = '#17a2b8'; // Голубой для длинного перерыва
-            break;
-    }
-}
-
-// Обработчики кнопок
-document.getElementById('startTimerBtn').addEventListener('click', startTimer);
-document.getElementById('pauseTimerBtn').addEventListener('click', pauseTimer);
-document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
-
-// Дополнительно: обработка закрытия страницы для остановки таймера
-window.addEventListener('beforeunload', function() {
-    clearInterval(timerInterval);
-});
-
-  // Простой скрипт таймера
-  let timerInterval;
-  function startTimer() {
-    const display = document.getElementById('timerDisplay');
-    const btn = document.getElementById('startTimerBtn');
-
-    display.style.display = 'block';
-    btn.textContent = 'Таймер запущен';
-    btn.disabled = true;
-    btn.style.backgroundColor = '#6c757d';
-
-    let seconds = 0;
-    clearInterval(timerInterval);
-
-    timerInterval = setInterval(() => {
-      seconds++;
-      let mins = String(Math.floor(seconds / 60)).padStart(2, '0');
-      let secs = String(seconds % 60).padStart(2, '0');
-      display.textContent = mins + ':' + secs;
+        // Автоматически начинаем следующую фазу через 1 секунду
+        setTimeout(startPhase, 1000);
+      } else {
+        currentTime--;
+        updateTimerDisplay();
+      }
     }, 1000);
   }
 
+  function updateTimerDisplay() {
+    const minutes = Math.floor(currentTime / 60);
+    const seconds = currentTime % 60;
+
+    document.getElementById('timerDisplay').textContent =
+      String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+  }
+
+  function updatePhaseDisplay() {
+    const phaseDisplay = document.getElementById('phaseDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+
+    let phaseName = '';
+    switch (currentPhase) {
+      case 'work':
+        phaseName = 'Работа';
+        timerDisplay.style.color = '#28a745';
+        break;
+      case 'short_break':
+        phaseName = 'Короткий перерыв';
+        timerDisplay.style.color = '#ffc107';
+        break;
+      case 'long_break':
+        phaseName = 'Длинный перерыв';
+        timerDisplay.style.color = '#17a2b8';
+        break;
+    }
+
+    phaseDisplay.textContent = `Фаза: ${phaseName}`;
+  }
+
+  // Привязка кнопок
+  document.getElementById('startTimerBtn').addEventListener('click', startTimer);
+  document.getElementById('pauseTimerBtn').addEventListener('click', pauseTimer);
+  document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
+
+  window.addEventListener('beforeunload', function() {
+    clearInterval(timerInterval);
+  });
+
+  // Функции медиаплеера оставляем без изменений
   function updateAudioPlayer(musicId) {
     const audioPlayer = document.getElementById('audio-player');
     const audioSource = document.getElementById('audio-source');
@@ -535,7 +530,6 @@ window.addEventListener('beforeunload', function() {
       })
       .catch(error => {
         console.error('Ошибка загрузки аудио:', error);
-        alert('Не удалось загрузить аудиофайл');
       });
   }
 
@@ -557,32 +551,16 @@ window.addEventListener('beforeunload', function() {
       })
       .catch(error => {
         console.error('Ошибка загрузки видео:', error);
-        alert('Не удалось загрузить видеофайл');
       });
   }
 
-  // Функция для преобразования Google Drive ссылок
   function convertGoogleDriveUrl(driveUrl) {
-    // Извлекаем ID файла из ссылки
     const match = driveUrl.match(/\/d\/([^\/]+)\//);
     if (match && match[1]) {
       return 'https://drive.google.com/uc?export=download&id=' + match[1];
     }
-    return driveUrl; // если не Google Drive, возвращаем оригинальную ссылку
+    return driveUrl;
   }
-
-  // Инициализация при загрузке страницы
-  document.addEventListener('DOMContentLoaded', function() {
-    const initialMusicId = [[${log.musicMedia?.id}]];
-    const initialVideoId = [[${log.visualMedia?.id}]];
-
-    if (initialMusicId) {
-      updateAudioPlayer(initialMusicId);
-    }
-    if (initialVideoId) {
-      updateVideoPlayer(initialVideoId);
-    }
-  });
 </script>
 </body>
 </html>
