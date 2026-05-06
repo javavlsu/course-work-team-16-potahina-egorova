@@ -4,13 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.vlsu.ispi.beans.Task;
-import ru.vlsu.ispi.beans.TaskList;
-import ru.vlsu.ispi.beans.User;
+import org.springframework.transaction.annotation.Transactional;
+import ru.vlsu.ispi.beans.*;
 import ru.vlsu.ispi.beans.Task.Category;
 import ru.vlsu.ispi.beans.Task.Status;
+import ru.vlsu.ispi.repositories.TaskExecutionLogRepository;
 import ru.vlsu.ispi.repositories.TaskRepository;
+import ru.vlsu.ispi.repositories.UserAchievementRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -18,10 +20,19 @@ import java.util.Optional;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final TaskExecutionLogService taskExecutionLogService;
+    private final TaskExecutionLogRepository taskExecutionLogRepository;
+    private final UserAchievementRepository userAchievementRepository;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository,
+                       TaskExecutionLogService taskExecutionLogService,
+                       TaskExecutionLogRepository taskExecutionLogRepository,
+                       UserAchievementRepository userAchievementRepository) {
         this.taskRepository = taskRepository;
+        this.taskExecutionLogService = taskExecutionLogService;
+        this.taskExecutionLogRepository = taskExecutionLogRepository;
+        this.userAchievementRepository = userAchievementRepository;
     }
 
     public Task createTask(String title, TaskList taskList, User creator,
@@ -95,8 +106,24 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public void deleteTask(int id) {
-        taskRepository.deleteById(id);
+    @Transactional
+    public void deleteTask(int taskId, User currentUser) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (task.getUser().getId() != currentUser.getId()) {
+            throw new TaskAccessDeniedException("Cannot delete another user's task or task with achievement");
+        }
+
+        userAchievementRepository.nullifyTaskReferences(taskId);
+
+        // Удаляем логи выполнения задачи (если есть)
+        Optional<TaskExecutionLog> logOptional = taskExecutionLogService.findByTaskId(taskId);
+        if (logOptional.isPresent()) {
+            taskExecutionLogRepository.delete(logOptional.get());
+        }
+
+        taskRepository.delete(task);
     }
 
     public List<Task> getAllTasks() {

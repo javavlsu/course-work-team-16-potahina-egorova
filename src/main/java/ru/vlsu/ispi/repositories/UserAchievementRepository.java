@@ -1,9 +1,11 @@
 package ru.vlsu.ispi.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.beans.UserAchievement;
 
@@ -20,4 +22,9 @@ public interface UserAchievementRepository extends JpaRepository<UserAchievement
     List<UserAchievement> findByUserId(@Param("userId") int userId);
 
     boolean existsByUserIdAndAchievementId(Integer userId, Integer achievementId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserAchievement ua SET ua.task = null WHERE ua.task.id = :taskId")
+    void nullifyTaskReferences(@Param("taskId") int taskId);
 }

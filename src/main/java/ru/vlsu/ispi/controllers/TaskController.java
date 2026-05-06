@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.vlsu.ispi.beans.Task;
+import ru.vlsu.ispi.beans.TaskAccessDeniedException;
 import ru.vlsu.ispi.beans.TaskList;
 import ru.vlsu.ispi.beans.User;
 import ru.vlsu.ispi.services.TaskListService;
@@ -18,6 +19,7 @@ import ru.vlsu.ispi.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -295,13 +297,21 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
+
+
     @GetMapping("/delete")
     public String deleteTask(@RequestParam("id") int id, HttpSession session) {
-        if (session.getAttribute("user") == null) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
             return "redirect:/login";
         }
 
-        taskService.deleteTask(id);
+        try {
+            taskService.deleteTask(id, currentUser);
+        } catch (TaskAccessDeniedException e) {
+            return "redirect:/tasks?error=access_denied";
+        }
+
         return "redirect:/tasks";
     }
 }
