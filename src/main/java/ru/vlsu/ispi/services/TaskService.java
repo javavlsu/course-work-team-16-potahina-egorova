@@ -163,7 +163,10 @@ public class TaskService {
             Task.Status status,
             String search,
             Pageable pageable) {
-
+        // Обработка пустой строки поиска
+        if (search != null && search.trim().isEmpty()) {
+            search = null;
+        }
         return taskRepository.findByUserAndFilters(user, category, status, search, pageable);
     }
 

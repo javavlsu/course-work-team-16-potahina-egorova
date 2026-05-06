@@ -37,6 +37,7 @@ public class TaskController {
         this.taskListService = taskListService;
     }
 
+
     @GetMapping
     public String showUserTasks(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -54,8 +55,9 @@ public class TaskController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        // Получаем только задачи, созданные текущим пользователем
-        Page<Task> taskPage = taskService.findTasksCreatedByUser(currentUser, pageable);
+        // Используем метод с фильтрацией
+        Page<Task> taskPage = taskService.findTasksByUserWithFilters(
+                currentUser, category, status, search, pageable);
 
         List<Task> sortedTasks = taskPage.getContent().stream()
                 .sorted((t1, t2) -> {

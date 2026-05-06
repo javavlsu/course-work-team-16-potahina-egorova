@@ -16,18 +16,20 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findByUser(User user);
 
-    @Query("SELECT t FROM Task t WHERE t.user = :user " +
-            "AND (:category IS NULL OR t.category = :category) " +
-            "AND (:status IS NULL OR t.status = :status) " +
-            "AND (:search IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-            "ORDER BY t.id DESC")
+
+    @Query("SELECT t FROM Task t WHERE t.user = :user "
+            + "AND (:category IS NULL OR t.category = :category) "
+            + "AND (:status IS NULL OR t.status = :status) "
+            + "AND (:search IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :search, '%'))) "
+            + "ORDER BY "
+            + "CASE WHEN t.status = 'Completed' THEN 1 ELSE 0 END ASC, "
+            + "t.deadlineAt ASC")
     Page<Task> findByUserAndFilters(
             @Param("user") User user,
             @Param("category") Task.Category category,
             @Param("status") Task.Status status,
             @Param("search") String search,
-            Pageable pageable
-    );
+            Pageable pageable);
 
     @Query("SELECT t FROM Task t JOIN FETCH t.assignedUser WHERE t.id = :id")
     Optional<Task> findByIdWithAssignedUser(@Param("id") Integer id);
