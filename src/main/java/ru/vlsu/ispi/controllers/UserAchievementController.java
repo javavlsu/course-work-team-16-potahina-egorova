@@ -31,18 +31,6 @@ public class UserAchievementController {
         this.achievementService = achievementService;
     }
 
-//    @GetMapping
-//    public String allUserAchievements(Model model, HttpSession session) {
-//        if (session.getAttribute("user") == null) {
-//            return "redirect:/login";
-//        }
-//
-//        List<UserAchievement> userAchievements = userAchievementService.getAllUserAchievements();
-//        model.addAttribute("userAchievements", userAchievements);
-//        return "userAchievements";
-//    }
-
-
     @GetMapping
     public String allUserAchievements(Model model, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");

@@ -46,7 +46,6 @@ public class UserController {
 
         List<User> users = userService.searchUsers(criteria, currentUser.getId());
 
-        // Создаём карту для хранения статуса дружбы
         Map<Integer, Boolean> friendsStatus = new HashMap<>();
         for (User user : users) {
             friendsStatus.put(user.getId(), userService.areFriends(currentUser.getId(), user.getId()));

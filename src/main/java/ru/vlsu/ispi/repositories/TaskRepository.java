@@ -16,7 +16,6 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findByUser(User user);
 
-
     @Query("SELECT t FROM Task t WHERE t.user = :user "
             + "AND (:category IS NULL OR t.category = :category) "
             + "AND (:status IS NULL OR t.status = :status) "

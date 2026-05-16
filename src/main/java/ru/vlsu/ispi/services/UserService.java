@@ -34,14 +34,6 @@ public class UserService {
         this.achievementService = achievementService;
     }
 
-//    public List<User> searchUsers(UserSearchCriteria criteria) {
-//        return userRepository.findByCriteria(
-//                criteria.getUserId(),
-//                criteria.getName(),
-//                criteria.getEmail()
-//        );
-//    }
-
     public List<User> searchUsers(UserSearchCriteria criteria, Integer currentUserId) {
         List<User> users = userRepository.findByCriteria(
                 criteria.getUserId(),
@@ -124,7 +116,6 @@ public class UserService {
     public Optional<User> authenticate(String email, String password) {
         return userRepository.findByEmailAndPassword(email, password);
     }
-
 
     @Transactional
     public User save(User user) {

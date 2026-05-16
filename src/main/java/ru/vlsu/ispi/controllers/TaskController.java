@@ -299,8 +299,6 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
-
-
     @GetMapping("/delete")
     public String deleteTask(@RequestParam("id") int id, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");

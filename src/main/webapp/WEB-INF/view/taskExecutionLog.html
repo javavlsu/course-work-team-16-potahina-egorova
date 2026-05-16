@@ -302,25 +302,6 @@
         Вернуться к задачам
       </a>
     </div>
-
-<!--    <div class="execution-controls">-->
-<!--      <h3>Управление задачей</h3>-->
-<!--      <div class="control-buttons">-->
-<!--        <button id="startTimerBtn" class="save-button start-timer-btn" onclick="startTimer()">-->
-<!--          Запустить таймер-->
-<!--        </button>-->
-<!--        <div id="timerDisplay" class="timer-display" style="display: none;">00:00</div>-->
-<!--        <a th:href="@{/tasks/complete-execution(logId=${log.id})}"-->
-<!--           class="save-button complete-task-btn">-->
-<!--          Завершить задачу-->
-<!--        </a>-->
-<!--        <a th:href="@{/tasks}"-->
-<!--           class="btn-view"-->
-<!--           style="color: #FF8C00; text-decoration: underline;">-->
-<!--          Вернуться к задачам-->
-<!--        </a>-->
-<!--      </div>-->
-<!--    </div>-->
   </div>
 </div>
 </div>
@@ -513,7 +494,6 @@
     clearInterval(timerInterval);
   });
 
-  // Функции медиаплеера оставляем без изменений
   function updateAudioPlayer(musicId) {
     const audioPlayer = document.getElementById('audio-player');
     const audioSource = document.getElementById('audio-source');
@@ -525,7 +505,6 @@
     fetch('/api/music/' + musicId)
       .then(response => response.json())
       .then(data => {
-        // Берем прямую ссылку (например, /media/piano.mp3) прямо из БД
         audioSource.src = data.url;
         audioPlayer.load();
         audioPlayer.style.display = 'block';

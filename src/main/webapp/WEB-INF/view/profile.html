@@ -236,7 +236,7 @@
         <h2>Добро пожаловать, <span th:text="${session.user.name}"></span>!</h2>
         <p>Email: <span th:text="${session.user.email}"></span></p>
         <p>Телефон: <span th:text="${session.user.phoneNumber}"></span></p>
-        <p>Баллы: <span th:text="${session.user.totalPoints}"></span></p>
+        <p>Бонусы XP: <span th:text="${session.user.totalPoints}"></span></p>
         <a th:href="@{/settings}" href="settings.html">Редактировать профиль</a>
         <a href="/tm_project2/logout">Выйти</a>
 

@@ -47,7 +47,6 @@ public class TaskExecutionLogController {
         this.timerModeService = timerModeService;
     }
 
-
     @GetMapping("/start-execution")
     public String startTaskExecution(
             @RequestParam("taskId") Integer taskId,
@@ -87,7 +86,6 @@ public class TaskExecutionLogController {
         return "taskExecutionLog";
     }
 
-
     @GetMapping("/task-execution")
     public String showTaskExecution(@RequestParam("id") Integer logId, Model model,
                                     HttpSession session) {
@@ -120,9 +118,8 @@ public class TaskExecutionLogController {
                 taskExecutionLogService.getTaskExecutionLogById(logId)
                         .orElseThrow(() -> new RuntimeException("Лог не найден"));
         model.addAttribute("log", log);
-        return "taskCompletion"; // Новая страница
+        return "taskCompletion";
     }
-
 
     @PostMapping("/finish-execution")
     public String finishTaskExecution(@RequestParam("logId") Integer logId,
@@ -146,7 +143,6 @@ public class TaskExecutionLogController {
             userService.save(assignedUser);
         }
 
-        // Отправляем уведомления
         notificationService.createTaskCompletionNotification(task);
 
         return "redirect:/tasks";
